@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { OddsButton } from "../features/OddsButton";
 import { useBetslipStore } from "../store/useBetslipStore";
-import { TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, Zap, Search, Trophy, Bell, Play, ShieldAlert, Crown, Users, Copy, Tag, Sun, Moon, Star, Globe } from "lucide-react";
+import { TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, Zap, Search, Trophy, Bell, Play, ShieldAlert, Crown, Users, Copy, Tag, Sun, Moon, Star, Globe, Gamepad2, Wallet } from "lucide-react";
 
 interface MatchOdds { id: string; matchId: string; matchName: string; market: string; outcome: string; odds: number; }
 interface MatchMarkets { main: { home: MatchOdds; draw: MatchOdds; away: MatchOdds }; extra?: { over: MatchOdds; under: MatchOdds; btts: MatchOdds }; }
@@ -39,8 +39,6 @@ export default function Home() {
   const [promoInput, setPromoInput] = useState("");
   const [isWatchLiveOpen, setIsWatchLiveOpen] = useState<string | null>(null);
   const [commentaryIndex, setCommentaryIndex] = useState(0);
-  
-  // NEW: Theme State
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   const [walletBalance, setWalletBalance] = useState<number>(() => { if (typeof window !== 'undefined') { const saved = localStorage.getItem('betnova_wallet'); return saved ? parseFloat(saved) : 1500; } return 1500; });
@@ -50,7 +48,6 @@ export default function Home() {
 
   const exchangeRates = { GHS: 1, USD: 0.08, EUR: 0.07 };
   const formatMoney = (amount: number) => `${currency} ${(amount * exchangeRates[currency]).toFixed(2)}`;
-  const formatOdds = (odds: number) => odds; // Odds stay the same globally
 
   const totalOdds = selections.reduce((acc, sel) => acc * sel.odds, 1);
   const potentialWin = stake * totalOdds;
@@ -70,7 +67,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Sort matches: Favorites first, then filter
   const sortedAndFilteredMatches = matches
     .filter(match => {
       const matchesSearch = match.home.toLowerCase().includes(searchQuery.toLowerCase()) || match.away.toLowerCase().includes(searchQuery.toLowerCase());
@@ -83,7 +79,7 @@ export default function Home() {
     .sort((a, b) => {
       const aFav = favorites.includes(a.id) ? 1 : 0;
       const bFav = favorites.includes(b.id) ? 1 : 0;
-      return bFav - aFav; // Favorites bubble to top
+      return bFav - aFav;
     });
 
   useEffect(() => {
@@ -168,10 +164,9 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium dark:text-gray-400 text-gray-600">
             <Link href="/" className="hover:text-green-500 transition-colors">Sports</Link>
             <Link href="/" className="hover:text-green-500 transition-colors">Live Betting</Link>
-            <Link href="/my-bets" className="hover:text-green-500 transition-colors">My Bets</div>
+            <Link href="/my-bets" className="hover:text-green-500 transition-colors">My Bets</Link>
           </nav>
           <div className="flex items-center gap-3">
-            {/* NEW: Currency Dropdown */}
             <div className="relative group">
               <button className="hidden md:flex items-center gap-1 h-9 px-3 dark:bg-gray-950 bg-gray-100 border dark:border-gray-800 border-gray-200 rounded-md font-bold text-xs hover:border-green-500 transition-colors">
                 <Globe className="w-3 h-3" /> {currency}
@@ -189,7 +184,6 @@ export default function Home() {
             </div>
             <button onClick={() => setIsDepositOpen(true)} className="hidden md:flex h-9 px-3 bg-green-600 text-white rounded-md font-bold text-xs hover:bg-green-700 transition-colors">+ Deposit</button>
             
-            {/* NEW: Theme Toggle */}
             <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="p-2 hover:bg-gray-800/10 rounded-md dark:text-gray-400 text-gray-600">
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
@@ -240,7 +234,7 @@ export default function Home() {
       </div>
 
       {selections.length > 0 && (
-        <div className="lg:hidden fixed bottom-0 left-0 w-full dark:bg-gray-900 bg-white border-t dark:border-gray-800 border-gray-200 p-4 z-40 flex items-center justify-between shadow-2xl">
+        <div className="lg:hidden fixed bottom-16 left-0 w-full dark:bg-gray-900 bg-white border-t dark:border-gray-800 border-gray-200 p-4 z-40 flex items-center justify-between shadow-2xl">
           <div><p className="text-xs dark:text-gray-400 text-gray-600">{selections.length} Selection(s)</p><p className="text-green-500 font-bold">{formatMoney(potentialWin)}</p></div>
           <button onClick={() => { document.getElementById('mobile-betslip')?.scrollIntoView({ behavior: 'smooth' }); setIsMobileMenuOpen(false); }} className="bg-green-500 text-gray-950 px-6 py-2 rounded-md font-bold text-sm hover:bg-green-600 transition-colors">View Betslip</button>
         </div>
@@ -304,7 +298,6 @@ export default function Home() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
                       <p className="font-semibold dark:text-white text-gray-900">{match.home}</p>
-                      {/* NEW: Favorite Star */}
                       <button onClick={() => toggleFavorite(match.id)} className="hover:scale-110 transition-transform">
                         <Star className={`w-4 h-4 ${favorites.includes(match.id) ? 'fill-yellow-400 text-yellow-400' : 'dark:text-gray-600 text-gray-400'}`} />
                       </button>
@@ -383,19 +376,39 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center text-sm dark:text-gray-500 text-gray-600"><p className="mb-2">18+ Play Responsibly. Licensed by the Gaming Commission.</p><p>© 2026 BetNova. All rights reserved.</p></div>
       </footer>
 
-      {/* Cool-Off Modal */}
       {isCoolOffModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsCoolOffModalOpen(false)} /><div className="relative dark:bg-gray-900 bg-white border-2 border-red-500/50 rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center"><ShieldAlert className="w-12 h-12 text-red-500 mx-auto mb-4" /><h2 className="text-xl font-bold dark:text-white text-gray-900 mb-2">Self-Exclusion / Cool-Off</h2><p className="text-sm dark:text-gray-400 text-gray-600 mb-6">Temporarily lock your account to play responsibly.</p><div className="grid grid-cols-3 gap-2 mb-4">{[{h:24, l:'24h'}, {h:168, l:'7 Days'}, {h:720, l:'30 Days'}].map((c) => (<button key={c.h} onClick={() => { activateCoolOff(c.h); setIsCoolOffModalOpen(false); }} className="py-2 rounded-md font-bold dark:bg-gray-800 bg-gray-100 dark:text-white text-gray-900 hover:bg-red-500 hover:text-white transition-colors">{c.l}</button>))}</div><button onClick={deactivateCoolOff} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mb-2">Unlock Early</button><button onClick={() => setIsCoolOffModalOpen(false)} className="w-full h-11 dark:bg-gray-800 bg-gray-200 dark:text-gray-300 text-gray-700 rounded-md font-bold text-base hover:bg-gray-700 transition-colors">Cancel</button></div></div>
       )}
 
-      {/* Deposit Modal + Promo */}
       {isDepositOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsDepositOpen(false)} /><div className="relative dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl p-6 w-full max-w-md shadow-2xl"><button onClick={() => setIsDepositOpen(false)} className="absolute top-4 right-4 dark:text-gray-500 text-gray-400 hover:text-white"><X className="w-6 h-6" /></button><h2 className="text-2xl font-bold dark:text-white text-gray-900 mb-2">Deposit Funds</h2><div className="mb-4"><label className="block text-xs font-medium dark:text-gray-400 text-gray-600 mb-1 flex items-center gap-1"><Tag className="w-3 h-3" /> Promo Code</label><div className="flex gap-2"><input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="e.g. WELCOME25" className="flex h-10 w-full rounded-md border dark:border-gray-800 border-gray-200 dark:bg-gray-950 bg-gray-100 px-3 py-2 text-sm dark:text-white text-gray-900 uppercase focus:outline-none focus:ring-2 focus:ring-green-500" /><button onClick={() => applyPromoCode(promoInput)} className="h-10 px-4 bg-green-600 text-white rounded-md font-bold text-xs hover:bg-green-700">Apply</button></div></div><div className="grid grid-cols-3 gap-2 mb-4">{[10, 50, 100, 200, 500, 1000].map((amt) => (<button key={amt} onClick={() => setDepositAmount(amt)} className={`py-2 rounded-md font-bold border transition-colors ${depositAmount === amt ? 'bg-green-500 border-green-500 text-gray-950' : 'dark:bg-gray-950 bg-gray-100 border dark:border-gray-800 border-gray-200 dark:text-white text-gray-900 hover:border-green-500'}`}>{formatMoney(amt)}</button>))}</div><div className="mb-6"><label className="block text-xs font-medium dark:text-gray-400 text-gray-600 mb-1">Custom Amount</label><input type="number" value={depositAmount || ''} onChange={(e) => setDepositAmount(parseFloat(e.target.value) || 0)} className="flex h-10 w-full rounded-md border dark:border-gray-800 border-gray-200 dark:bg-gray-950 bg-gray-100 px-3 py-2 text-sm dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500" /></div><button onClick={handleDeposit} disabled={depositAmount <= 0} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Confirm Deposit</button></div></div>
       )}
 
       {isLoginOpen && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsLoginOpen(false)} /><div className="relative dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl p-6 w-full max-w-md shadow-2xl"><button onClick={() => setIsLoginOpen(false)} className="absolute top-4 right-4 dark:text-gray-500 text-gray-400 hover:text-white transition-colors"><X className="w-6 h-6" /></button><div className="text-center mb-6"><h2 className="text-2xl font-bold dark:text-white text-gray-900 mb-2">Welcome Back</h2><p className="text-sm dark:text-gray-400 text-gray-600">Log in to your BetNova account.</p></div><form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); setIsLoginOpen(false); }}><div><label className="block text-xs font-medium dark:text-gray-400 text-gray-600 mb-1">Email or Phone</label><input type="text" placeholder="user@example.com" className="flex h-10 w-full rounded-md border dark:border-gray-800 border-gray-200 dark:bg-gray-950 bg-gray-100 px-3 py-2 text-sm dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500" /></div><div><label className="block text-xs font-medium dark:text-gray-400 text-gray-600 mb-1">Password</label><input type="password" placeholder="••••••••" className="flex h-10 w-full rounded-md border dark:border-gray-800 border-gray-200 dark:bg-gray-950 bg-gray-100 px-3 py-2 text-sm dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500" /></div><button type="submit" className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mt-2">Log In</button></form></div></div>)}
       
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* --- NEW: BOTTOM NAVIGATION BAR --- */}
+      <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-40 pb-safe lg:hidden">
+        <div className="container mx-auto max-w-lg flex items-center justify-around py-3">
+          <Link href="/" className="flex flex-col items-center gap-1 text-green-500">
+            <TrendingUp className="w-6 h-6" />
+            <span className="text-[10px] font-bold">Sports</span>
+          </Link>
+          <Link href="/games" className="flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition-colors">
+            <Gamepad2 className="w-6 h-6" />
+            <span className="text-[10px] font-bold">Games</span>
+          </Link>
+          <Link href="/withdraw" className="flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition-colors">
+            <Wallet className="w-6 h-6" />
+            <span className="text-[10px] font-bold">Withdraw</span>
+          </Link>
+          <Link href="/profile" className="flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition-colors">
+            <User className="w-6 h-6" />
+            <span className="text-[10px] font-bold">Profile</span>
+          </Link>
+        </div>
+      </nav>
+
+      <div className="fixed bottom-20 right-6 z-50 lg:bottom-6">
         {isChatOpen && (<div className="mb-4 w-80 h-96 dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl flex flex-col overflow-hidden"><div className="bg-green-600 p-4 flex items-center justify-between"><div className="flex items-center gap-2"><div className="w-2 h-2 bg-white rounded-full animate-pulse"></div><h3 className="font-bold text-white text-sm">BetNova Support</h3></div><button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white"><X className="w-5 h-5" /></button></div><div className="flex-1 p-4 overflow-y-auto space-y-3 dark:bg-gray-950 bg-gray-50"><div className="dark:bg-gray-800 bg-gray-200 dark:text-white text-gray-900 text-sm p-3 rounded-lg rounded-tl-none max-w-[80%]">👋 Hi Harriette! Welcome to BetNova. How can we help you today?</div></div><div className="p-3 border-t dark:border-gray-800 border-gray-200 dark:bg-gray-900 bg-gray-100"><div className="flex gap-2"><input type="text" placeholder="Type a message..." className="flex-1 h-9 rounded-md dark:bg-gray-950 bg-white border dark:border-gray-800 border-gray-200 px-3 text-sm dark:text-white text-gray-900 focus:outline-none focus:ring-1 focus:ring-green-500" /><button className="h-9 px-3 bg-green-500 text-gray-950 rounded-md font-bold text-xs hover:bg-green-600">Send</button></div></div></div>)}
         <button onClick={() => setIsChatOpen(!isChatOpen)} className="w-14 h-14 bg-green-500 text-gray-950 rounded-full shadow-lg flex items-center justify-center hover:bg-green-600 transition-all hover:scale-110">{isChatOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}</button>
       </div>

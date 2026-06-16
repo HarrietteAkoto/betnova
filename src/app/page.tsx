@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { OddsButton } from "../features/OddsButton";
 import { useBetslipStore } from "../store/useBetslipStore";
-import { TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, Zap, Search, Trophy, Bell, Play, ShieldAlert, ZapOff } from "lucide-react";
+import { TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, Zap, Search, Trophy, Bell, Play, ShieldAlert, Crown, Users, Copy } from "lucide-react";
 
 interface MatchOdds { id: string; matchId: string; matchName: string; market: string; outcome: string; odds: number; }
 interface MatchMarkets { main: { home: MatchOdds; draw: MatchOdds; away: MatchOdds }; extra?: { over: MatchOdds; under: MatchOdds; btts: MatchOdds }; }
@@ -18,8 +18,14 @@ const initialMatches: MatchData[] = [
 
 const recentWinners = ["🔥 Kwame just won GHS 4,500 on Real Madrid!", "🎉 Ama cashed out GHS 1,200 on Lakers!", "⚽ Yaw hit a 5-fold Acca for GHS 12,000!", "💰 Esi just deposited GHS 500 and won big!"];
 
+// NEW: Expert Picks Data
+const expertPicks = [
+  { id: 'ep-1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Real Madrid (1)', odds: 2.45, confidence: '92%' },
+  { id: 'ep-2', matchName: 'Lakers vs Celtics', market: 'Match Winner', outcome: 'Celtics (2)', odds: 1.95, confidence: '88%' }
+];
+
 export default function Home() {
-  const { selections, stake, mode, setStake, toggleMode, removeSelection, clearBetslip, placeBet, claimDailyBonus, hasClaimedBonus, quickBetEnabled, toggleQuickBet, quickBetStake, setQuickBetStake } = useBetslipStore();
+  const { selections, stake, mode, setStake, toggleMode, removeSelection, clearBetslip, placeBet, claimDailyBonus, hasClaimedBonus, quickBetEnabled, toggleQuickBet, quickBetStake, setQuickBetStake, totalWagered, addSelection, achievements } = useBetslipStore();
   
   const [notification, setNotification] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -45,6 +51,14 @@ export default function Home() {
 
   const totalOdds = selections.reduce((acc, sel) => acc * sel.odds, 1);
   const potentialWin = stake * totalOdds;
+
+  // NEW: VIP Tier Logic
+  const getVipTier = () => {
+    if (totalWagered >= 2000) return { name: 'Gold', color: 'text-yellow-400', bg: 'bg-yellow-400/20', icon: <Crown className="w-3 h-3 text-yellow-400" /> };
+    if (totalWagered >= 500) return { name: 'Silver', color: 'text-gray-300', bg: 'bg-gray-300/20', icon: <Crown className="w-3 h-3 text-gray-300" /> };
+    return { name: 'Bronze', color: 'text-orange-400', bg: 'bg-orange-400/20', icon: <Crown className="w-3 h-3 text-orange-400" /> };
+  };
+  const vipTier = getVipTier();
 
   useEffect(() => { if (typeof window !== 'undefined') localStorage.setItem('betnova_wallet', walletBalance.toString()); }, [walletBalance]);
   useEffect(() => { if (typeof window !== 'undefined') localStorage.setItem('betnova_logged_in', isLoggedIn.toString()); }, [isLoggedIn]);
@@ -99,28 +113,11 @@ export default function Home() {
     if (lastGoal) { setNotification(`⚽ GOAL! ${lastGoal}`); setTimeout(() => setLastGoal(null), 4000); }
   }, [lastGoal]);
 
-  // 🔥 UPGRADED: Bulletproof Bet Placement with Error Checking & Wallet Deduction
   const handlePlaceBet = () => {
-    if (selections.length === 0) {
-      setNotification("🚫 Please select at least one outcome!");
-      setTimeout(() => setNotification(null), 3000);
-      return;
-    }
-    if (stake <= 0) {
-      setNotification("🚫 Please enter a valid stake amount!");
-      setTimeout(() => setNotification(null), 3000);
-      return;
-    }
-    if (stake > walletBalance) {
-      setNotification("🚫 Insufficient balance! Please deposit funds.");
-      setTimeout(() => setNotification(null), 3000);
-      return;
-    }
-
-    // Deduct the stake from the wallet!
+    if (selections.length === 0) { setNotification("🚫 Please select at least one outcome!"); setTimeout(() => setNotification(null), 3000); return; }
+    if (stake <= 0) { setNotification("🚫 Please enter a valid stake amount!"); setTimeout(() => setNotification(null), 3000); return; }
+    if (stake > walletBalance) { setNotification("🚫 Insufficient balance! Please deposit funds."); setTimeout(() => setNotification(null), 3000); return; }
     setWalletBalance(prev => prev - stake);
-    
-    // Place the bet
     placeBet(totalOdds, potentialWin); 
     setNotification(`✅ Successfully placed ${mode} bet for GHS ${stake.toFixed(2)}!`);
     clearBetslip();
@@ -143,6 +140,13 @@ export default function Home() {
       setTimeout(() => setNotification(null), 3000);
       setDepositAmount(0); setIsDepositOpen(false);
     }
+  };
+
+  const handleCopyExpertPick = (pick: typeof expertPicks[0]) => {
+    const selection = { id: pick.id, matchId: 'ep', matchName: pick.matchName, market: pick.market, outcome: pick.outcome, odds: pick.odds };
+    addSelection(selection);
+    setNotification(`📋 Copied Expert Pick: ${pick.outcome} @ ${pick.odds}`);
+    setTimeout(() => setNotification(null), 3000);
   };
 
   return (
@@ -173,7 +177,6 @@ export default function Home() {
                   <div className="p-3 border-b border-gray-800 flex justify-between items-center"><h3 className="font-bold text-white">Notifications</h3><button onClick={() => setIsNotifOpen(false)}><X className="w-4 h-4 text-gray-400" /></button></div>
                   <div className="max-h-96 overflow-y-auto">
                     <div className="p-3 border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer"><p className="text-sm text-white font-medium">⚽ Goal! Real Madrid scores!</p><p className="text-xs text-gray-500 mt-1">2 mins ago</p></div>
-                    <div className="p-3 border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer"><p className="text-sm text-white font-medium">📉 Odds dropped on Arsenal (1.90)</p><p className="text-xs text-gray-500 mt-1">15 mins ago</p></div>
                     <div className="p-3 hover:bg-gray-800/50 cursor-pointer"><p className="text-sm text-white font-medium">🎉 Daily Bonus Available!</p><p className="text-xs text-gray-500 mt-1">1 hour ago</p></div>
                   </div>
                 </div>
@@ -182,8 +185,18 @@ export default function Home() {
             <button className="p-2 hover:bg-gray-800 rounded-md text-gray-400"><User className="h-5 w-5" /></button>
             {isLoggedIn ? (
               <div className="relative group">
-                <button className="hidden sm:flex h-10 px-4 py-2 bg-gray-800 text-white rounded-md font-bold text-sm hover:bg-gray-700 transition-colors items-center gap-2"><User className="h-4 w-4" /> Hi, Harriette!</button>
+                <button className="hidden sm:flex h-10 px-4 py-2 bg-gray-800 text-white rounded-md font-bold text-sm hover:bg-gray-700 transition-colors items-center gap-2">
+                  <User className="h-4 w-4" /> Hi, Harriette!
+                  {/* NEW: VIP Badge */}
+                  <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${vipTier.bg} ${vipTier.color} border border-current/20`}>
+                    {vipTier.icon} {vipTier.name}
+                  </span>
+                </button>
                 <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl z-50 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                  <div className="px-4 py-3 border-b border-gray-800">
+                    <p className="text-xs text-gray-400">Total Wagered</p>
+                    <p className="text-sm font-bold text-white">GHS {totalWagered.toFixed(2)}</p>
+                  </div>
                   <button onClick={() => setIsLimitModalOpen(true)} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-800 flex items-center gap-2"><ShieldAlert className="w-4 h-4" /> Set Deposit Limits</button>
                   <button onClick={() => setIsLoggedIn(false)} className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-gray-800">Logout</button>
                 </div>
@@ -226,6 +239,28 @@ export default function Home() {
               <li className="flex items-center justify-between p-2 rounded-md hover:bg-gray-950 cursor-pointer transition-colors"><span>🏀 Basketball</span><span className="text-xs">45</span></li>
               <li className="flex items-center justify-between p-2 rounded-md hover:bg-gray-950 cursor-pointer transition-colors"><span>🎾 Tennis</span><span className="text-xs">28</span></li>
             </ul>
+          </div>
+
+          {/* NEW: Expert Picks Card */}
+          <div className="bg-gradient-to-br from-gray-900 to-gray-950 rounded-lg border border-green-500/30 p-4">
+            <h3 className="font-semibold text-white mb-3 flex items-center gap-2"><Users className="w-4 h-4 text-green-500" /> Expert Picks</h3>
+            <div className="space-y-3">
+              {expertPicks.map((pick) => (
+                <div key={pick.id} className="bg-gray-950/50 p-3 rounded border border-gray-800">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded">{pick.confidence} Confidence</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mb-1">{pick.matchName}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-white">{pick.outcome}</span>
+                    <span className="text-sm font-bold text-green-500">{pick.odds.toFixed(2)}</span>
+                  </div>
+                  <button onClick={() => handleCopyExpertPick(pick)} className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 bg-gray-800 hover:bg-green-600 text-gray-300 hover:text-white text-xs font-bold rounded transition-colors">
+                    <Copy className="w-3 h-3" /> Copy to Betslip
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </aside>
 

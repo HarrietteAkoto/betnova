@@ -28,6 +28,8 @@ interface BetslipState {
   notification: string | null;
   betHistory: PlacedBet[];
   hasClaimedBonus: boolean;
+  quickBetEnabled: boolean;
+  quickBetStake: number;
   
   addSelection: (selection: Selection) => void;
   removeSelection: (id: string) => void;
@@ -37,6 +39,9 @@ interface BetslipState {
   placeBet: (totalOdds: number, potentialWin: number) => void;
   claimDailyBonus: () => void;
   cashOutBet: (betId: string, cashOutValue: number) => void;
+  toggleQuickBet: () => void;
+  setQuickBetStake: (stake: number) => void;
+  quickPlaceBet: (selection: Selection) => void;
 }
 
 export const useBetslipStore = create<BetslipState>()(
@@ -48,10 +53,13 @@ export const useBetslipStore = create<BetslipState>()(
       notification: null,
       betHistory: [],
       hasClaimedBonus: false,
+      quickBetEnabled: false,
+      quickBetStake: 10,
 
       addSelection: (selection) => set((state) => {
         if (state.selections.find(s => s.id === selection.id)) return state;
         return { selections: [...state.selections, selection] };
+        // Note: Quick bet logic is handled directly in OddsButton to bypass this
       }),
 
       removeSelection: (id) => set((state) => ({
@@ -59,11 +67,7 @@ export const useBetslipStore = create<BetslipState>()(
       })),
 
       setStake: (stake) => set({ stake }),
-
-      toggleMode: () => set((state) => ({
-        mode: state.mode === 'REAL' ? 'SIM' : 'REAL'
-      })),
-
+      toggleMode: () => set((state) => ({ mode: state.mode === 'REAL' ? 'SIM' : 'REAL' })),
       clearBetslip: () => set({ selections: [], stake: 0, notification: null }),
 
       placeBet: (totalOdds, potentialWin) => {
@@ -106,10 +110,33 @@ export const useBetslipStore = create<BetslipState>()(
           notification: `✅ Successfully cashed out GHS ${cashOutValue.toFixed(2)}!`
         }));
         setTimeout(() => set({ notification: null }), 3000);
+      },
+
+      toggleQuickBet: () => set((state) => ({ quickBetEnabled: !state.quickBetEnabled })),
+      setQuickBetStake: (stake) => set({ quickBetStake: stake }),
+
+      quickPlaceBet: (selection) => {
+        const { quickBetStake, mode, betHistory } = get();
+        const potentialWin = quickBetStake * selection.odds;
+        
+        const newBet: PlacedBet = {
+          id: Math.random().toString(36).substr(2, 9),
+          matchName: selection.matchName,
+          outcome: selection.outcome,
+          odds: selection.odds,
+          stake: quickBetStake,
+          potentialWin: potentialWin,
+          status: 'Pending',
+          date: new Date().toLocaleDateString()
+        };
+
+        set({
+          betHistory: [newBet, ...betHistory],
+          notification: `⚡ Quick Bet Placed! GHS ${quickBetStake} on ${selection.outcome}`
+        });
+        setTimeout(() => set({ notification: null }), 3000);
       }
     }),
-    {
-      name: 'betnova-betslip-storage', // This saves it to the browser!
-    }
+    { name: 'betnova-betslip-storage' }
   )
 );

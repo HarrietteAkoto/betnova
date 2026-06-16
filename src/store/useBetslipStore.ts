@@ -30,6 +30,8 @@ interface BetslipState {
   hasClaimedBonus: boolean;
   quickBetEnabled: boolean;
   quickBetStake: number;
+  totalWagered: number;
+  achievements: string[];
   
   addSelection: (selection: Selection) => void;
   removeSelection: (id: string) => void;
@@ -42,6 +44,7 @@ interface BetslipState {
   toggleQuickBet: () => void;
   setQuickBetStake: (stake: number) => void;
   quickPlaceBet: (selection: Selection) => void;
+  addAchievement: (badge: string) => void;
 }
 
 export const useBetslipStore = create<BetslipState>()(
@@ -55,11 +58,12 @@ export const useBetslipStore = create<BetslipState>()(
       hasClaimedBonus: false,
       quickBetEnabled: false,
       quickBetStake: 10,
+      totalWagered: 0,
+      achievements: [],
 
       addSelection: (selection) => set((state) => {
         if (state.selections.find(s => s.id === selection.id)) return state;
         return { selections: [...state.selections, selection] };
-        // Note: Quick bet logic is handled directly in OddsButton to bypass this
       }),
 
       removeSelection: (id) => set((state) => ({
@@ -71,7 +75,7 @@ export const useBetslipStore = create<BetslipState>()(
       clearBetslip: () => set({ selections: [], stake: 0, notification: null }),
 
       placeBet: (totalOdds, potentialWin) => {
-        const { selections, stake, mode } = get();
+        const { selections, stake, mode, totalWagered, achievements } = get();
         if (selections.length === 0 || stake <= 0) return;
         
         const newBets: PlacedBet[] = selections.map(sel => ({
@@ -85,13 +89,23 @@ export const useBetslipStore = create<BetslipState>()(
           date: new Date().toLocaleDateString()
         }));
 
+        // Check for First Bet Achievement
+        let newAchievements = [...achievements];
+        let achievementMsg = null;
+        if (!achievements.includes('First Bet Placed')) {
+          newAchievements.push('First Bet Placed');
+          achievementMsg = '🏆 Achievement Unlocked: First Bet Placed!';
+        }
+
         set((state) => ({
           betHistory: [...newBets, ...state.betHistory],
           selections: [],
           stake: 0,
-          notification: `✅ Successfully placed ${mode} bet for GHS ${stake.toFixed(2)}!`
+          totalWagered: totalWagered + stake,
+          achievements: newAchievements,
+          notification: achievementMsg || `✅ Successfully placed ${mode} bet for GHS ${stake.toFixed(2)}!`
         }));
-        setTimeout(() => set({ notification: null }), 3000);
+        setTimeout(() => set({ notification: null }), 4000);
       },
 
       claimDailyBonus: () => {
@@ -116,26 +130,41 @@ export const useBetslipStore = create<BetslipState>()(
       setQuickBetStake: (stake) => set({ quickBetStake: stake }),
 
       quickPlaceBet: (selection) => {
-        const { quickBetStake, mode, betHistory } = get();
+        const { quickBetStake, mode, betHistory, totalWagered, achievements } = get();
         const potentialWin = quickBetStake * selection.odds;
         
-        const newBet: PlacedBet = {
-          id: Math.random().toString(36).substr(2, 9),
-          matchName: selection.matchName,
-          outcome: selection.outcome,
-          odds: selection.odds,
-          stake: quickBetStake,
-          potentialWin: potentialWin,
-          status: 'Pending',
-          date: new Date().toLocaleDateString()
-        };
+        let newAchievements = [...achievements];
+        let achievementMsg = null;
+        if (!achievements.includes('First Bet Placed')) {
+          newAchievements.push('First Bet Placed');
+          achievementMsg = '🏆 Achievement Unlocked: First Bet Placed!';
+        }
 
         set({
-          betHistory: [newBet, ...betHistory],
-          notification: `⚡ Quick Bet Placed! GHS ${quickBetStake} on ${selection.outcome}`
+          betHistory: [{
+            id: Math.random().toString(36).substr(2, 9),
+            matchName: selection.matchName,
+            outcome: selection.outcome,
+            odds: selection.odds,
+            stake: quickBetStake,
+            potentialWin: potentialWin,
+            status: 'Pending',
+            date: new Date().toLocaleDateString()
+          }, ...betHistory],
+          totalWagered: totalWagered + quickBetStake,
+          achievements: newAchievements,
+          notification: achievementMsg || `⚡ Quick Bet Placed! GHS ${quickBetStake} on ${selection.outcome}`
         });
-        setTimeout(() => set({ notification: null }), 3000);
-      }
+        setTimeout(() => set({ notification: null }), 4000);
+      },
+
+      addAchievement: (badge) => set((state) => {
+        if (state.achievements.includes(badge)) return state;
+        return { 
+          achievements: [...state.achievements, badge],
+          notification: `🏆 Achievement Unlocked: ${badge}!`
+        };
+      })
     }),
     { name: 'betnova-betslip-storage' }
   )

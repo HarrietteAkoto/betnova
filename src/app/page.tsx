@@ -151,7 +151,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans pb-20 lg:pb-0">
+    <div className="min-h-screen bg-gray-950 text-white font-sans pb-24 lg:pb-0">
       <style>{`@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } } .animate-marquee { animation: marquee 25s linear infinite; }`}</style>
 
       <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-gray-900/95 backdrop-blur">
@@ -229,7 +229,7 @@ export default function Home() {
       </div>
 
       {selections.length > 0 && (
-        <div className="lg:hidden fixed bottom-16 left-0 w-full bg-gray-900 border-t border-gray-800 p-4 z-40 flex items-center justify-between shadow-2xl">
+        <div className="md:hidden fixed bottom-20 left-0 w-full bg-gray-900 border-t border-gray-800 p-4 z-40 flex items-center justify-between shadow-2xl">
           <div><p className="text-xs text-gray-400">{selections.length} Selection(s)</p><p className="text-green-500 font-bold">{formatMoney(potentialWin)}</p></div>
           <button onClick={() => { document.getElementById('mobile-betslip')?.scrollIntoView({ behavior: 'smooth' }); setIsMobileMenuOpen(false); }} className="bg-green-500 text-gray-950 px-6 py-2 rounded-md font-bold text-sm hover:bg-green-600 transition-colors">View Betslip</button>
         </div>
@@ -381,10 +381,10 @@ export default function Home() {
 
       {isLoginOpen && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsLoginOpen(false)} /><div className="relative bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl"><button onClick={() => setIsLoginOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><X className="w-6 h-6" /></button><div className="text-center mb-6"><h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2><p className="text-sm text-gray-400">Log in to your BetNova account.</p></div><form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); setIsLoginOpen(false); }}><div><label className="block text-xs font-medium text-gray-400 mb-1">Email or Phone</label><input type="text" placeholder="user@example.com" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" /></div><div><label className="block text-xs font-medium text-gray-400 mb-1">Password</label><input type="password" placeholder="••••••••" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" /></div><button type="submit" className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mt-2">Log In</button></form></div></div>)}
       
-      {/* --- BOTTOM NAVIGATION BAR --- */}
-      <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-40 pb-safe lg:hidden">
+      {/* --- BOTTOM NAVIGATION BAR (VISIBLE ON ALL SCREENS) --- */}
+      <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-50 pb-4">
         <div className="container mx-auto max-w-lg flex items-center justify-around py-3">
-          <Link href="/" className="flex flex-col items-center gap-1 text-green-500">
+          <Link href="/" className="flex flex-col items-center gap-1 text-green-500 hover:text-green-400 transition-colors">
             <TrendingUp className="w-6 h-6" />
             <span className="text-[10px] font-bold">Sports</span>
           </Link>
@@ -403,7 +403,7 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="fixed bottom-20 right-6 z-50 lg:bottom-6">
+      <div className="fixed bottom-24 right-6 z-50 lg:bottom-6">
         {isChatOpen && (<div className="mb-4 w-80 h-96 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"><div className="bg-green-600 p-4 flex items-center justify-between"><div className="flex items-center gap-2"><div className="w-2 h-2 bg-white rounded-full animate-pulse"></div><h3 className="font-bold text-white text-sm">BetNova Support</h3></div><button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white"><X className="w-5 h-5" /></button></div><div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-950"><div className="bg-gray-800 text-white text-sm p-3 rounded-lg rounded-tl-none max-w-[80%]">👋 Hi Harriette! Welcome to BetNova. How can we help you today?</div></div><div className="p-3 border-t border-gray-800 bg-gray-900"><div className="flex gap-2"><input type="text" placeholder="Type a message..." className="flex-1 h-9 rounded-md bg-gray-950 border border-gray-800 px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-green-500" /><button className="h-9 px-3 bg-green-500 text-gray-950 rounded-md font-bold text-xs hover:bg-green-600">Send</button></div></div></div>)}
         <button onClick={() => setIsChatOpen(!isChatOpen)} className="w-14 h-14 bg-green-500 text-gray-950 rounded-full shadow-lg flex items-center justify-center hover:bg-green-600 transition-all hover:scale-110">{isChatOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}</button>
       </div>

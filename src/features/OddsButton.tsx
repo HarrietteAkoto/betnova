@@ -7,14 +7,20 @@ export interface OddsButtonProps {
 }
 
 export function OddsButton({ selection }: OddsButtonProps) {
-  const { selections, addSelection, removeSelection } = useBetslipStore();
+  const { selections, addSelection, removeSelection, quickBetEnabled, quickPlaceBet } = useBetslipStore();
   const isSelected = selections.some((s) => s.id === selection.id);
 
   const handleClick = () => {
-    if (isSelected) {
-      removeSelection(selection.id);
+    if (quickBetEnabled) {
+      // If Quick Bet is on, place the bet instantly!
+      quickPlaceBet(selection);
     } else {
-      addSelection(selection);
+      // Normal behavior: add/remove from betslip
+      if (isSelected) {
+        removeSelection(selection.id);
+      } else {
+        addSelection(selection);
+      }
     }
   };
 

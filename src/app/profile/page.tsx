@@ -44,21 +44,15 @@ export default function ProfilePage() {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
-        {/* Profile Header */}
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex items-center gap-4">
-          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
-            <User className="w-8 h-8 text-green-500" />
-          </div>
+          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center"><User className="w-8 h-8 text-green-500" /></div>
           <div className="flex-1">
             <h2 className="text-xl font-bold">Harriette</h2>
             <p className="text-gray-400 text-sm">harriette@betnova.com</p>
-            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold mt-2 ${vipTier.bg} ${vipTier.color} border border-current/20`}>
-              {vipTier.icon} {vipTier.name} Member
-            </div>
+            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold mt-2 ${vipTier.bg} ${vipTier.color} border border-current/20`}>{vipTier.icon} {vipTier.name} Member</div>
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
             <p className="text-gray-400 text-xs mb-1">Wallet Balance</p>
@@ -70,29 +64,20 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Achievements */}
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
           <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Trophy className="w-5 h-5 text-yellow-500" /> Achievements</h3>
-          {achievements.length === 0 ? (
-            <p className="text-gray-500 text-sm">No achievements yet. Place your first bet!</p>
-          ) : (
+          {achievements.length === 0 ? (<p className="text-gray-500 text-sm">No achievements yet. Place your first bet!</p>) : (
             <div className="flex flex-wrap gap-2">
-              {achievements.map((badge, i) => (
-                <span key={i} className="px-3 py-1.5 bg-green-500/10 text-green-500 text-xs font-bold rounded-full border border-green-500/20">🏆 {badge}</span>
-              ))}
+              {achievements.map((badge, i) => (<span key={i} className="px-3 py-1.5 bg-green-500/10 text-green-500 text-xs font-bold rounded-full border border-green-500/20">🏆 {badge}</span>))}
             </div>
           )}
         </div>
 
-        {/* Settings & Responsible Gaming */}
         <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
           <button className="w-full flex items-center justify-between p-4 hover:bg-gray-800/50 transition-colors border-b border-gray-800">
             <div className="flex items-center gap-3"><Settings className="w-5 h-5 text-gray-400" /><span className="text-sm font-medium">Account Settings</span></div>
           </button>
-          <button 
-            onClick={() => isCoolOffActive ? deactivateCoolOff() : activateCoolOff(24)} 
-            className={`w-full flex items-center justify-between p-4 hover:bg-gray-800/50 transition-colors ${isCoolOffActive ? 'text-red-400' : 'text-gray-300'}`}
-          >
+          <button onClick={() => isCoolOffActive ? deactivateCoolOff() : activateCoolOff(24)} className={`w-full flex items-center justify-between p-4 hover:bg-gray-800/50 transition-colors ${isCoolOffActive ? 'text-red-400' : 'text-gray-300'}`}>
             <div className="flex items-center gap-3"><ShieldAlert className="w-5 h-5" /><span className="text-sm font-medium">{isCoolOffActive ? 'Unlock Account' : '24h Cool-Off'}</span></div>
           </button>
           <button onClick={() => { localStorage.removeItem('betnova_logged_in'); window.location.href = '/'; }} className="w-full flex items-center justify-between p-4 hover:bg-red-500/10 transition-colors text-red-400 border-t border-gray-800">

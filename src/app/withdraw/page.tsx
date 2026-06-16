@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Wallet, Smartphone, Building2, CheckCircle } from "lucide-react";
-import { useBetslipStore } from "../../store/useBetslipStore";
+import { ArrowLeft, Smartphone, Building2, CheckCircle } from "lucide-react";
 
 export default function WithdrawPage() {
   const walletBalance = typeof window !== 'undefined' ? parseFloat(localStorage.getItem('betnova_wallet') || '1500') : 1500;
@@ -18,7 +17,6 @@ export default function WithdrawPage() {
     if (withdrawAmount <= 0 || withdrawAmount > walletBalance) return;
 
     setIsProcessing(true);
-    // Simulate backend processing
     setTimeout(() => {
       const newBalance = walletBalance - withdrawAmount;
       if (typeof window !== 'undefined') localStorage.setItem('betnova_wallet', newBalance.toString());
@@ -40,7 +38,7 @@ export default function WithdrawPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <div className="min-h-screen bg-gray-950 text-white font-sans pb-24">
       <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-gray-900/95 backdrop-blur">
         <div className="container mx-auto flex h-16 items-center px-4 gap-4">
           <Link href="/" className="p-2 hover:bg-gray-800 rounded-md"><ArrowLeft className="w-5 h-5" /></Link>
@@ -57,19 +55,10 @@ export default function WithdrawPage() {
         <form onSubmit={handleWithdraw} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">Withdrawal Amount (GHS)</label>
-            <input 
-              type="number" 
-              value={amount} 
-              onChange={(e) => setAmount(e.target.value)} 
-              placeholder="0.00" 
-              className="w-full h-12 rounded-lg border border-gray-800 bg-gray-950 px-4 text-white text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
+            <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="w-full h-12 rounded-lg border border-gray-800 bg-gray-950 px-4 text-white text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500" required />
             <div className="flex gap-2 mt-3">
               {[50, 100, 200, 500].map((amt) => (
-                <button key={amt} type="button" onClick={() => setAmount(amt.toString())} className="flex-1 py-2 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-gray-700 transition-colors">
-                  GHS {amt}
-                </button>
+                <button key={amt} type="button" onClick={() => setAmount(amt.toString())} className="flex-1 py-2 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-gray-700 transition-colors">GHS {amt}</button>
               ))}
             </div>
           </div>
@@ -86,11 +75,7 @@ export default function WithdrawPage() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            disabled={isProcessing || parseFloat(amount) <= 0 || parseFloat(amount) > walletBalance}
-            className="w-full h-12 bg-green-500 text-gray-950 rounded-lg font-bold text-base hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
+          <button type="submit" disabled={isProcessing || parseFloat(amount) <= 0 || parseFloat(amount) > walletBalance} className="w-full h-12 bg-green-500 text-gray-950 rounded-lg font-bold text-base hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {isProcessing ? "Processing..." : "Confirm Withdrawal"}
           </button>
         </form>

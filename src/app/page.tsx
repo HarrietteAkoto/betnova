@@ -99,8 +99,28 @@ export default function Home() {
     if (lastGoal) { setNotification(`⚽ GOAL! ${lastGoal}`); setTimeout(() => setLastGoal(null), 4000); }
   }, [lastGoal]);
 
+  // 🔥 UPGRADED: Bulletproof Bet Placement with Error Checking & Wallet Deduction
   const handlePlaceBet = () => {
-    if (selections.length === 0 || stake <= 0) return;
+    if (selections.length === 0) {
+      setNotification("🚫 Please select at least one outcome!");
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
+    if (stake <= 0) {
+      setNotification("🚫 Please enter a valid stake amount!");
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
+    if (stake > walletBalance) {
+      setNotification("🚫 Insufficient balance! Please deposit funds.");
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
+
+    // Deduct the stake from the wallet!
+    setWalletBalance(prev => prev - stake);
+    
+    // Place the bet
     placeBet(totalOdds, potentialWin); 
     setNotification(`✅ Successfully placed ${mode} bet for GHS ${stake.toFixed(2)}!`);
     clearBetslip();
@@ -287,7 +307,6 @@ export default function Home() {
               {selections.length > 0 && (<button onClick={handleShareBetslip} className="text-gray-400 hover:text-green-500 transition-colors" title="Share Betslip"><Share2 className="w-4 h-4" /></button>)}
             </div>
             
-            {/* NEW: Quick Bet Toggle */}
             <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-white flex items-center gap-1"><Zap className="w-3 h-3 text-yellow-500" /> Quick Bet</span>

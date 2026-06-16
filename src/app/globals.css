@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+:root {
+  /* Deep, rich dark backgrounds for maximum contrast */
+  --color-bg-primary: #0a0a12;
+  --color-bg-secondary: #161625;
+  --color-bg-sidebar: #12121f;
+  
+  /* Pure white and bright grays for crisp readability */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #d1d5db;
+  --color-text-muted: #9ca3af;
+  
+  /* Vibrant, neon-style accents */
+  --color-accent-green: #10b981;
+  --color-accent-gold: #fbbf24;
+  --color-accent-red: #ef4444;
+  
+  /* Subtle borders */
+  --color-border: #2d2d44;
+  --color-border-light: #3f3f5f;
+}
+
+/* FORCE the dark theme on the entire page */
+body {
+  background-color: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Dark Scrollbar */
+::-webkit-scrollbar { 
+  width: 8px; 
+  height: 8px; 
+}
+::-webkit-scrollbar-track { 
+  background: var(--color-bg-primary); 
+}
+::-webkit-scrollbar-thumb { 
+  background: var(--color-border); 
+  border-radius: 9999px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--color-border-light); 
+}

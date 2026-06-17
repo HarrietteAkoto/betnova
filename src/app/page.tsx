@@ -8,8 +8,8 @@ import {
   TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, 
   Zap, Search, Trophy, Bell, Play, ShieldAlert, Crown, Users, Copy, Tag, Star, Globe, 
   Gamepad2, Wallet, Ticket, Lock, Smartphone, CreditCard, HelpCircle, ArrowLeft, 
-  Timer, Calendar, Grid3X3, Activity, History, Flame, Award, ClipboardList, Home, 
-  Monitor, Basketball, Tennis, Table2, IceHockey, Hand, MoreHorizontal, Soccer
+  Timer, Calendar, LayoutGrid, Activity, History, Flame, Award, ClipboardList, Home, 
+  Monitor, Target, CircleDot, Disc, Snowflake, HandMetal, MoreHorizontal
 } from "lucide-react";
 
 interface MatchOdds { id: string; matchId: string; matchName: string; market: string; outcome: string; odds: number; }
@@ -81,7 +81,6 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
 
-  // NEW STATES FOR TOP/SECONDARY NAV & TABBED MARKETS
   const [activeTopNav, setActiveTopNav] = useState<string>('Sports');
   const [activeSport, setActiveSport] = useState<string>('Football');
   const [activeMarketTab, setActiveMarketTab] = useState<'markets' | 'stats' | 'codes'>('markets');
@@ -121,7 +120,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // NEW: GMT CLOCK TIMER
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date().toLocaleTimeString('en-GB', { timeZone: 'GMT', hour: '2-digit', minute: '2-digit' })), 1000);
     return () => clearInterval(timer);
@@ -246,280 +244,185 @@ export default function Home() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // NEW: FUNCTION TO RENDER MAIN AREA BASED ON TOP NAV
-  const renderMainArea = () => {
+  const renderMiddleContent = () => {
     switch (activeTopNav) {
       case 'Sports':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <aside className="hidden lg:block lg:col-span-3 space-y-4">
-              <div className="bg-gray-900 rounded-lg border border-gray-800 p-4">
-                <h3 className="font-semibold text-white mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-green-500" /> Popular Sports</h3>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li className="flex items-center justify-between p-2 rounded-md bg-gray-950 border border-gray-800 text-white cursor-pointer hover:border-green-500 transition-colors"><span>⚽ Soccer</span><span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse font-bold">142</span></li>
-                  <li className="flex items-center justify-between p-2 rounded-md hover:bg-gray-950 cursor-pointer transition-colors"><span>🏀 Basketball</span><span className="text-xs">45</span></li>
-                </ul>
-              </div>
-              <div className="bg-gray-900 rounded-lg border border-green-500/30 p-4">
-                <h3 className="font-semibold text-white mb-3 flex items-center gap-2"><Users className="w-4 h-4 text-green-500" /> Expert Picks</h3>
-                <div className="space-y-3">
-                  {expertPicks.map((pick) => (
-                    <div key={pick.id} className="bg-gray-950/50 p-3 rounded border border-gray-800">
-                      <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded">{pick.confidence} Confidence</span>
-                      <p className="text-xs text-gray-400 my-1">{pick.matchName}</p>
-                      <div className="flex items-center justify-between"><span className="text-sm font-medium text-white">{pick.outcome}</span><span className="text-sm font-bold text-green-500">{pick.odds.toFixed(2)}</span></div>
-                      <button onClick={() => handleCopyExpertPick(pick)} className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 bg-gray-800 hover:bg-green-600 text-gray-300 hover:text-white text-xs font-bold rounded transition-colors"><Copy className="w-3 h-3" /> Copy to Betslip</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </aside>
-
-            <section className="lg:col-span-6 space-y-6">
-              <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl border border-gray-800">
-                {carouselImages.map((img, index) => (
-                  <div key={img.id} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                    <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 p-6">
-                      <h3 className="text-2xl md:text-3xl font-bold text-white mb-1 drop-shadow-lg">{img.title}</h3>
-                      <p className="text-sm md:text-base text-green-400 font-medium drop-shadow-md">{img.subtitle}</p>
-                    </div>
+          <>
+            <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+              {carouselImages.map((img, index) => (
+                <div key={img.id} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                  <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 p-6">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-1 drop-shadow-lg">{img.title}</h3>
+                    <p className="text-sm md:text-base text-green-400 font-medium drop-shadow-md">{img.subtitle}</p>
                   </div>
-                ))}
-                <div className="absolute bottom-4 right-4 flex gap-2 z-10">
-                  {carouselImages.map((_, index) => (
-                    <button key={index} onClick={() => setCurrentSlide(index)} className={`h-2 rounded-full transition-all ${index === currentSlide ? 'bg-green-500 w-6' : 'bg-white/50 w-2'}`} />
-                  ))}
                 </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-green-900/40 to-gray-900 border border-green-500/30 rounded-xl p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3"><div className="p-2 bg-green-500/20 rounded-lg"><Zap className="w-6 h-6 text-green-500" /></div><div><h3 className="font-bold text-white text-sm">⚡ 10% Acca Boost!</h3><p className="text-xs text-gray-400">Get 10% extra on your winnings for 5+ selections.</p></div></div>
-                <button className="px-4 py-2 bg-green-500 text-gray-950 text-xs font-bold rounded-md hover:bg-green-600 transition-colors">Claim Now</button>
-              </div>
-
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {[{ id: 'all', label: '🔥 All' }, { id: 'live', label: '🔴 Live' }, { id: 'soccer', label: '⚽ Soccer' }, { id: 'basketball', label: '🏀 Basketball' }].map((filter) => (
-                  <button key={filter.id} onClick={() => setActiveFilter(filter.id as any)} className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${activeFilter === filter.id ? 'bg-green-500 text-gray-950 shadow-lg shadow-green-500/20' : 'bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-white border border-gray-800'}`}>{filter.label}</button>
+              ))}
+              <div className="absolute bottom-4 right-4 flex gap-2 z-10">
+                {carouselImages.map((_, index) => (
+                  <button key={index} onClick={() => setCurrentSlide(index)} className={`h-2 rounded-full transition-all ${index === currentSlide ? 'bg-green-500 w-6' : 'bg-white/50 w-2'}`} />
                 ))}
               </div>
+            </div>
 
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input type="text" placeholder="Search teams..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-gray-900 border border-gray-800 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" />
-              </div>
+            <div className="bg-gradient-to-r from-green-900/40 to-gray-900 border border-green-500/30 rounded-xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3"><div className="p-2 bg-green-500/20 rounded-lg"><Zap className="w-6 h-6 text-green-500" /></div><div><h3 className="font-bold text-white text-sm">⚡ 10% Acca Boost!</h3><p className="text-xs text-gray-400">Get 10% extra on your winnings for 5+ selections.</p></div></div>
+              <button className="px-4 py-2 bg-green-500 text-gray-950 text-xs font-bold rounded-md hover:bg-green-600 transition-colors">Claim Now</button>
+            </div>
 
-              {sortedAndFilteredMatches.length === 0 ? (<div className="text-center py-12 text-gray-500">No matches found</div>) : (
-                sortedAndFilteredMatches.map((match) => (
-                  <div key={match.id} className="bg-gray-900 rounded-lg border border-gray-800 p-4 space-y-4">
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span className={match.status.includes("World Cup") ? "text-yellow-400 font-bold" : ""}>{match.status}</span>
-                      <div className="flex gap-2">
-                        {match.isLive && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse">LIVE</span>}
-                        {match.isLive && <button onClick={() => setIsWatchLiveOpen(match.id)} className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-bold flex items-center gap-1 hover:bg-blue-700"><Play className="w-3 h-3 fill-white" /> Watch</button>}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <p className="font-semibold text-white">{match.home}</p>
-                          <button onClick={() => toggleFavorite(match.id)} className="hover:scale-110 transition-transform">
-                            <Star className={`w-4 h-4 ${favorites.includes(match.id) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
-                          </button>
-                          <div className="flex gap-1">{match.form.map((result, i) => (<span key={i} className={`w-5 h-5 flex items-center justify-center text-[10px] font-bold rounded ${result === 'W' ? 'bg-green-500/20 text-green-500' : result === 'D' ? 'bg-gray-500/20 text-gray-400' : 'bg-red-500/20 text-red-500'}`}>{result}</span>))}</div>
-                        </div>
-                        <p className="font-semibold text-white mt-1">{match.away}</p>
-                      </div>
-                      <div className={`text-2xl font-bold px-4 transition-colors duration-500 ${match.isLive ? 'text-green-500' : 'text-gray-500'}`}>{match.score}</div>
-                    </div>
-                    
-                    {match.isLive && (
-                      <div className="bg-gray-950 border border-gray-800 rounded p-2 flex items-center gap-2 text-xs">
-                        <span className="text-green-500 font-bold animate-pulse">● LIVE</span>
-                        <span className="text-gray-400 truncate">{liveCommentary[commentaryIndex]}</span>
-                      </div>
-                    )}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {[{ id: 'all', label: '🔥 All' }, { id: 'live', label: '🔴 Live' }, { id: 'soccer', label: '⚽ Soccer' }, { id: 'basketball', label: '🏀 Basketball' }].map((filter) => (
+                <button key={filter.id} onClick={() => setActiveFilter(filter.id as any)} className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${activeFilter === filter.id ? 'bg-green-500 text-gray-950 shadow-lg shadow-green-500/20' : 'bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-white border border-gray-800'}`}>{filter.label}</button>
+              ))}
+            </div>
 
-                    {/* NEW: TABBED MARKET INTERFACE */}
-                    <div className="pt-2 border-t border-gray-800">
-                      <div className="flex gap-4 mb-3 border-b border-gray-800">
-                        {(['markets', 'stats', 'codes'] as const).map((tab) => (
-                          <button 
-                            key={tab} 
-                            onClick={() => setActiveMarketTab(tab)}
-                            className={`pb-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 ${activeMarketTab === tab ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-500 hover:text-gray-300'}`}
-                          >
-                            {tab === 'markets' && <TrendingUp className="w-3 h-3" />}
-                            {tab === 'stats' && <BarChart3 className="w-3 h-3" />}
-                            {tab === 'codes' && <ClipboardList className="w-3 h-3" />}
-                            {tab}
-                          </button>
-                        ))}
-                      </div>
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <input type="text" placeholder="Search teams..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-gray-900 border border-gray-800 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" />
+            </div>
 
-                      {activeMarketTab === 'markets' && (
-                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
-                          <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
-                            {(['all', 'main', 'goals', 'corners', 'half', 'players'] as const).map(f => (
-                              <button key={f} onClick={() => setActiveMarketFilter(f)} className={`px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap ${activeMarketFilter === f ? 'bg-green-500 text-gray-950' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>
-                                {f.charAt(0).toUpperCase() + f.slice(1)}
-                              </button>
-                            ))}
-                          </div>
-
-                          {(activeMarketFilter === 'all' || activeMarketFilter === 'main') && (
-                            <div className="grid grid-cols-3 gap-2">
-                              <OddsButton selection={match.markets.main.home} />
-                              <OddsButton selection={match.markets.main.draw} />
-                              <OddsButton selection={match.markets.main.away} />
-                            </div>
-                          )}
-
-                          {(activeMarketFilter === 'all' || activeMarketFilter === 'goals') && match.markets.extra && (
-                            <div className="bg-gray-950 rounded-lg p-3 border border-gray-800">
-                              <p className="text-xs font-bold text-gray-400 mb-2 uppercase">Goals & BTTS</p>
-                              <div className="grid grid-cols-3 gap-2">
-                                <OddsButton selection={match.markets.extra.over} />
-                                <OddsButton selection={match.markets.extra.under} />
-                                <OddsButton selection={match.markets.extra.btts} />
-                              </div>
-                            </div>
-                          )}
-
-                          {(activeMarketFilter === 'all' || activeMarketFilter === 'main') && match.markets.special && (
-                            <div className="bg-gray-950 rounded-lg p-3 border border-gray-800">
-                              <p className="text-xs font-bold text-gray-400 mb-2 uppercase">Double Chance</p>
-                              <div className="grid grid-cols-2 gap-2">
-                                <OddsButton selection={match.markets.special.dc1x} />
-                                <OddsButton selection={match.markets.special.dcx2} />
-                              </div>
-                            </div>
-                          )}
-                          
-                          {(activeMarketFilter === 'corners' || activeMarketFilter === 'half' || activeMarketFilter === 'players') && (
-                            <div className="text-center py-4 text-gray-500 text-sm">
-                              More {activeMarketFilter} markets coming soon!
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {activeMarketTab === 'stats' && (
-                        <div className="bg-gray-950 rounded-lg p-3 border border-gray-800 animate-in fade-in slide-in-from-top-2">
-                          <p className="text-sm text-gray-300 mb-3">📊 {match.stats}</p>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-xs text-gray-400"><span>Possession</span><span>55% - 45%</span></div>
-                            <div className="w-full bg-gray-800 rounded-full h-1.5"><div className="bg-green-500 h-1.5 rounded-full" style={{ width: '55%' }}></div></div>
-                          </div>
-                        </div>
-                      )}
-
-                      {activeMarketTab === 'codes' && (
-                        <div className="bg-gray-950 rounded-lg p-3 border border-gray-800 animate-in fade-in slide-in-from-top-2 text-center">
-                          <p className="text-sm text-gray-400 mb-2">Share this match as a booking code</p>
-                          <button onClick={() => { addSelection(match.markets.main.home); setNotification("📋 Added to betslip to generate code!"); setTimeout(() => setNotification(null), 2000); }} className="px-4 py-2 bg-gray-800 hover:bg-green-600 text-white rounded text-xs font-bold transition-colors">
-                            Add to Betslip to Share
-                          </button>
-                        </div>
-                      )}
+            {sortedAndFilteredMatches.length === 0 ? (<div className="text-center py-12 text-gray-500">No matches found</div>) : (
+              sortedAndFilteredMatches.map((match) => (
+                <div key={match.id} className="bg-gray-900 rounded-lg border border-gray-800 p-4 space-y-4">
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span className={match.status.includes("World Cup") ? "text-yellow-400 font-bold" : ""}>{match.status}</span>
+                    <div className="flex gap-2">
+                      {match.isLive && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse">LIVE</span>}
+                      {match.isLive && <button onClick={() => setIsWatchLiveOpen(match.id)} className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-bold flex items-center gap-1 hover:bg-blue-700"><Play className="w-3 h-3 fill-white" /> Watch</button>}
                     </div>
                   </div>
-                ))
-              )}
-            </section>
-
-            <aside id="mobile-betslip" className="lg:col-span-3">
-              <div className="bg-gray-900 rounded-lg border border-gray-800 p-4 lg:sticky lg:top-24">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-white flex items-center gap-2">Betslip {selections.length > 0 && <span className="bg-green-500 text-gray-950 text-xs px-2 py-0.5 rounded-full font-bold">{selections.length}</span>}</h3>
-                  {selections.length > 0 && (<button onClick={handleShareBetslip} className="text-gray-400 hover:text-green-500 transition-colors"><Share2 className="w-4 h-4" /></button>)}
-                </div>
-
-                <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Ticket className="w-4 h-4 text-green-500" />
-                    <span className="text-xs font-bold text-white">Load Booking Code</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <input type="text" value={bookingCode} onChange={(e) => setBookingCode(e.target.value.toUpperCase())} placeholder="e.g. WC2026" className="flex-1 h-8 rounded bg-gray-900 border border-gray-800 text-xs text-white px-2 focus:outline-none focus:ring-1 focus:ring-green-500 uppercase" />
-                    <button onClick={() => loadBookingCode(bookingCode)} className="h-8 px-3 bg-green-600 text-white rounded text-xs font-bold hover:bg-green-700">Load</button>
-                  </div>
-                </div>
-
-                <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
-                  <div className="flex items-center justify-between mb-2"><span className="text-xs font-bold text-white flex items-center gap-1"><Zap className="w-3 h-3 text-yellow-500" /> Quick Bet</span><button onClick={toggleQuickBet} className={`w-10 h-5 rounded-full relative transition-colors ${quickBetEnabled ? 'bg-green-500' : 'bg-gray-700'}`}><div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${quickBetEnabled ? 'left-5' : 'left-0.5'}`} /></button></div>
-                  {quickBetEnabled && (<div className="flex items-center gap-2"><span className="text-xs text-gray-400">Stake:</span><input type="number" value={quickBetStake} onChange={(e) => setQuickBetStake(parseFloat(e.target.value) || 0)} className="w-20 h-7 rounded bg-gray-900 border border-gray-800 text-xs text-white text-center focus:outline-none focus:ring-1 focus:ring-green-500" /><span className="text-xs text-gray-500">{currency}</span></div>)}
-                </div>
-
-                <div className="space-y-3 mb-4 min-h-[100px]">
-                  {selections.length === 0 ? (<p className="text-center text-gray-500 text-sm py-8">Click an odd to add to your betslip</p>) : (
-                    selections.map((sel) => (
-                      <div key={sel.id} className="bg-gray-950 p-3 rounded border border-gray-800 relative group">
-                        <button onClick={() => removeSelection(sel.id)} className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition-colors"><X className="w-4 h-4" /></button>
-                        <span className="text-xs text-gray-500">{sel.market}</span><p className="text-sm font-medium text-white mb-1">{sel.matchName}</p><p className="text-xs text-gray-400 mb-2">{sel.outcome}</p><span className="text-green-500 font-bold">{sel.odds.toFixed(2)}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <p className="font-semibold text-white">{match.home}</p>
+                        <button onClick={() => toggleFavorite(match.id)} className="hover:scale-110 transition-transform">
+                          <Star className={`w-4 h-4 ${favorites.includes(match.id) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
+                        </button>
+                        <div className="flex gap-1">{match.form.map((result, i) => (<span key={i} className={`w-5 h-5 flex items-center justify-center text-[10px] font-bold rounded ${result === 'W' ? 'bg-green-500/20 text-green-500' : result === 'D' ? 'bg-gray-500/20 text-gray-400' : 'bg-red-500/20 text-red-500'}`}>{result}</span>))}</div>
                       </div>
-                    ))
+                      <p className="font-semibold text-white mt-1">{match.away}</p>
+                    </div>
+                    <div className={`text-2xl font-bold px-4 transition-colors duration-500 ${match.isLive ? 'text-green-500' : 'text-gray-500'}`}>{match.score}</div>
+                  </div>
+                  
+                  {match.isLive && (
+                    <div className="bg-gray-950 border border-gray-800 rounded p-2 flex items-center gap-2 text-xs">
+                      <span className="text-green-500 font-bold animate-pulse">● LIVE</span>
+                      <span className="text-gray-400 truncate">{liveCommentary[commentaryIndex]}</span>
+                    </div>
                   )}
-                </div>
 
-                {selections.length > 0 && (
-                  <div className="p-3 bg-gray-950 rounded-lg border border-gray-800 mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-white flex items-center gap-1"><Ticket className="w-3 h-3 text-blue-400" /> Share Betslip</span>
+                  <div className="pt-2 border-t border-gray-800">
+                    <div className="flex gap-4 mb-3 border-b border-gray-800">
+                      {(['markets', 'stats', 'codes'] as const).map((tab) => (
+                        <button key={tab} onClick={() => setActiveMarketTab(tab)} className={`pb-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 ${activeMarketTab === tab ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-500 hover:text-gray-300'}`}>
+                          {tab === 'markets' && <TrendingUp className="w-3 h-3" />}
+                          {tab === 'stats' && <BarChart3 className="w-3 h-3" />}
+                          {tab === 'codes' && <ClipboardList className="w-3 h-3" />}
+                          {tab}
+                        </button>
+                      ))}
                     </div>
-                    {generatedCode ? (
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-gray-900 border border-green-500/30 rounded p-2 text-center">
-                          <p className="text-[10px] text-gray-400">Your Booking Code</p>
-                          <p className="text-lg font-bold text-green-400 tracking-wider">{generatedCode}</p>
-                        </div>
-                        <button onClick={() => { navigator.clipboard.writeText(generatedCode); setNotification("📋 Code copied!"); setTimeout(() => setNotification(null), 2000); }} className="h-12 px-3 bg-green-600 text-white rounded text-xs font-bold hover:bg-green-700 transition-colors">Copy</button>
-                      </div>
-                    ) : (
-                      <button onClick={() => { const code = generateBookingCode(); setGeneratedCode(code); }} className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2">
-                        <Share2 className="w-3 h-3" /> Generate Booking Code
-                      </button>
-                    )}
-                  </div>
-                )}
 
-                {selections.length > 0 && (
-                  <div className="space-y-3 border-t border-gray-800 pt-4">
-                    {freeBetBalance > 0 && (
-                      <div className="flex items-center justify-between p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <Gift className="w-4 h-4 text-green-500" />
-                          <span className="text-xs font-bold text-green-400">Use Free Bet (GHS {freeBetBalance.toFixed(2)})</span>
+                    {activeMarketTab === 'markets' && (
+                      <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
+                          {(['all', 'main', 'goals', 'corners', 'half', 'players'] as const).map(f => (
+                            <button key={f} onClick={() => setActiveMarketFilter(f)} className={`px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap ${activeMarketFilter === f ? 'bg-green-500 text-gray-950' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>
+                              {f.charAt(0).toUpperCase() + f.slice(1)}
+                            </button>
+                          ))}
                         </div>
-                        <button onClick={toggleFreeBet} className={`w-10 h-5 rounded-full relative transition-colors ${useFreeBet ? 'bg-green-500' : 'bg-gray-700'}`}>
-                          <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${useFreeBet ? 'left-5' : 'left-0.5'}`} />
+
+                        {(activeMarketFilter === 'all' || activeMarketFilter === 'main') && (
+                          <div className="grid grid-cols-3 gap-2">
+                            <OddsButton selection={match.markets.main.home} />
+                            <OddsButton selection={match.markets.main.draw} />
+                            <OddsButton selection={match.markets.main.away} />
+                          </div>
+                        )}
+
+                        {(activeMarketFilter === 'all' || activeMarketFilter === 'goals') && match.markets.extra && (
+                          <div className="bg-gray-950 rounded-lg p-3 border border-gray-800">
+                            <p className="text-xs font-bold text-gray-400 mb-2 uppercase">Goals & BTTS</p>
+                            <div className="grid grid-cols-3 gap-2">
+                              <OddsButton selection={match.markets.extra.over} />
+                              <OddsButton selection={match.markets.extra.under} />
+                              <OddsButton selection={match.markets.extra.btts} />
+                            </div>
+                          </div>
+                        )}
+
+                        {(activeMarketFilter === 'all' || activeMarketFilter === 'main') && match.markets.special && (
+                          <div className="bg-gray-950 rounded-lg p-3 border border-gray-800">
+                            <p className="text-xs font-bold text-gray-400 mb-2 uppercase">Double Chance</p>
+                            <div className="grid grid-cols-2 gap-2">
+                              <OddsButton selection={match.markets.special.dc1x} />
+                              <OddsButton selection={match.markets.special.dcx2} />
+                            </div>
+                          </div>
+                        )}
+                        
+                        {(activeMarketFilter === 'corners' || activeMarketFilter === 'half' || activeMarketFilter === 'players') && (
+                          <div className="text-center py-4 text-gray-500 text-sm">
+                            More {activeMarketFilter} markets coming soon!
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {activeMarketTab === 'stats' && (
+                      <div className="bg-gray-950 rounded-lg p-3 border border-gray-800 animate-in fade-in slide-in-from-top-2">
+                        <p className="text-sm text-gray-300 mb-3">📊 {match.stats}</p>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-xs text-gray-400"><span>Possession</span><span>55% - 45%</span></div>
+                          <div className="w-full bg-gray-800 rounded-full h-1.5"><div className="bg-green-500 h-1.5 rounded-full" style={{ width: '55%' }}></div></div>
+                        </div>
+                      </div>
+                    )}
+
+                    {activeMarketTab === 'codes' && (
+                      <div className="bg-gray-950 rounded-lg p-3 border border-gray-800 animate-in fade-in slide-in-from-top-2 text-center">
+                        <p className="text-sm text-gray-400 mb-2">Share this match as a booking code</p>
+                        <button onClick={() => { addSelection(match.markets.main.home); setNotification("📋 Added to betslip to generate code!"); setTimeout(() => setNotification(null), 2000); }} className="px-4 py-2 bg-gray-800 hover:bg-green-600 text-white rounded text-xs font-bold transition-colors">
+                          Add to Betslip to Share
                         </button>
                       </div>
                     )}
-
-                    {!useFreeBet && (
-                      <>
-                        <div className="flex gap-2">{[10, 50, 100].map((amt) => (<button key={amt} onClick={() => setStake(amt)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">{formatMoney(amt)}</button>))}<button onClick={() => setStake(walletBalance)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">MAX</button></div>
-                        <div><label className="text-xs text-gray-400 mb-1 block">Stake ({currency})</label><input type="number" placeholder="0.00" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-right font-bold" value={stake === 0 ? '' : stake} onChange={(e) => setStake(parseFloat(e.target.value) || 0)} /></div>
-                      </>
-                    )}
-                    
-                    <div className="flex justify-between text-sm"><span className="text-gray-400">Total Odds:</span><span className="text-white font-bold">{totalOdds.toFixed(2)}</span></div>
-                    <div className="flex justify-between text-sm"><span className="text-gray-400">Potential Win:</span><span className="text-green-500 font-bold">{formatMoney(potentialWin)}</span></div>
-                    <button disabled={isCoolOffActive} className={`w-full h-12 px-8 rounded-md font-bold text-base transition-colors flex items-center justify-center gap-2 ${isCoolOffActive ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-green-500 text-gray-950 hover:bg-green-600'}`} onClick={initiatePlaceBet}>
-                      <Lock className="w-4 h-4" /> {isCoolOffActive ? 'Cool-Off Active' : 'Place Bet'}
-                    </button>
                   </div>
-                )}
+                </div>
+              ))
+            )}
+          </>
+        );
+
+      case 'Live Betting':
+        return (
+          <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+            <h3 className="text-red-500 font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2"><span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" /> Live In-Play</h3>
+            {matches.filter(m => m.isLive).map(m => (
+              <div key={m.id} className="bg-gray-900 rounded-lg border border-red-900/30 p-4 space-y-3">
+                <div className="flex justify-between text-xs text-gray-400 mb-2"><span>{m.status}</span><span className="text-red-500 font-bold">{m.score}</span></div>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-bold text-white">{m.home}</span>
+                  <span className="font-bold text-white">{m.away}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <OddsButton selection={m.markets.main.home} />
+                  <OddsButton selection={m.markets.main.draw} />
+                  <OddsButton selection={m.markets.main.away} />
+                </div>
               </div>
-            </aside>
+            ))}
+            {matches.filter(m => m.isLive).length === 0 && <p className="text-center text-gray-500 py-12">No live matches right now.</p>}
           </div>
         );
-      
+
       case 'Jackpot':
         return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-top-2">
+          <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
             <h3 className="text-yellow-400 font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2"><Trophy className="w-4 h-4" /> Mega Jackpot (12 Games)</h3>
             <div className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
               <div className="grid grid-cols-5 bg-gray-950 p-2 text-xs font-bold text-gray-400 text-center">
@@ -586,7 +489,7 @@ export default function Home() {
                 <button className="w-full py-3 bg-green-500 text-gray-950 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-green-600"><Smartphone className="w-5 h-5" /> Download for Android</button>
                 <button className="w-full py-3 bg-green-500 text-gray-950 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-green-600"><Smartphone className="w-5 h-5" /> Download for iOS</button>
               </div>
-              <div className="mt-6 p-4 bg-white rounded-lg inline-block"><Grid3X3 className="w-24 h-24 text-gray-900" /><p className="text-gray-900 text-xs font-bold mt-1">Scan QR Code</p></div>
+              <div className="mt-6 p-4 bg-white rounded-lg inline-block"><LayoutGrid className="w-24 h-24 text-gray-900" /><p className="text-gray-900 text-xs font-bold mt-1">Scan QR Code</p></div>
             </div>
           </div>
         );
@@ -602,18 +505,13 @@ export default function Home() {
           </div>
         );
 
-      case 'Games':
-      case 'Live Betting':
-      case 'Scheduled Virtuals':
-      case 'Results':
+      default:
         return (
-          <div className="text-center py-12 text-gray-500 animate-in fade-in slide-in-from-top-2">
-            <p>{activeTopNav} content will appear here.</p>
+          <div className="text-center py-12 text-gray-500 animate-in fade-in slide-in-from-top-2 bg-gray-900 rounded-lg border border-gray-800">
+            <p className="text-lg font-bold text-gray-400 mb-2">{activeTopNav}</p>
+            <p>This section is currently being updated with new features.</p>
           </div>
         );
-
-      default:
-        return null;
     }
   };
 
@@ -695,50 +593,6 @@ export default function Home() {
         <div className="flex whitespace-nowrap animate-marquee">{[...recentWinners, ...recentWinners].map((winner, i) => (<span key={i} className="mx-8 text-sm font-medium text-green-400 flex items-center gap-2"><Trophy className="w-4 h-4" /> {winner}</span>))}</div>
       </div>
 
-      {/* NEW: TOP NAVIGATION BAR */}
-      <div className="sticky top-16 z-40 bg-gray-900 border-b border-gray-800 overflow-x-auto scrollbar-hide">
-        <div className="flex px-2 py-2 gap-2 min-w-max">
-          {['Sports', 'Games', 'Live Betting', 'Scheduled Virtuals', 'Jackpot', 'Livescore', 'Results', 'Promotions', 'Sporty Loyalty', 'App', 'GMT+00:00'].map((item) => (
-            <button key={item} onClick={() => setActiveTopNav(item)} className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold transition-all min-h-[44px] ${activeTopNav === item ? 'bg-green-500 text-gray-950' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white border border-gray-700'}`}>
-              {item === 'Sports' && <Soccer className="w-3.5 h-3.5" />}
-              {item === 'Games' && <Monitor className="w-3.5 h-3.5" />}
-              {item === 'Live Betting' && <Timer className="w-3.5 h-3.5" />}
-              {item === 'Scheduled Virtuals' && <Calendar className="w-3.5 h-3.5" />}
-              {item === 'Jackpot' && <Trophy className="w-3.5 h-3.5" />}
-              {item === 'Livescore' && <Activity className="w-3.5 h-3.5" />}
-              {item === 'Results' && <History className="w-3.5 h-3.5" />}
-              {item === 'Promotions' && <Gift className="w-3.5 h-3.5" />}
-              {item === 'Sporty Loyalty' && <Star className="w-3.5 h-3.5" />}
-              {item === 'App' && <Smartphone className="w-3.5 h-3.5" />}
-              {item === 'GMT+00:00' && <Globe className="w-3.5 h-3.5" />}
-              {item}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* NEW: SECONDARY NAVIGATION BAR */}
-      <div className="sticky top-[72px] z-30 bg-gray-900 border-b border-gray-800 overflow-x-auto scrollbar-hide">
-        <div className="flex px-2 py-2 gap-3 min-w-max">
-          {['Home', 'Football', 'vFootball', 'Basketball', 'Tennis', 'eFootball', 'Table Tennis', 'eBasketball', 'Ice Hockey', 'Handball', 'More Sports'].map((sport) => (
-            <button key={sport} onClick={() => setActiveSport(sport)} className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg min-w-[60px] min-h-[44px] transition-all ${activeSport === sport ? 'text-green-500 bg-green-500/10' : 'text-gray-500 hover:text-gray-300'}`}>
-              {sport === 'Football' && <Soccer className="w-5 h-5" />}
-              {sport === 'vFootball' && <Monitor className="w-5 h-5" />}
-              {sport === 'Basketball' && <Basketball className="w-5 h-5" />}
-              {sport === 'Tennis' && <Tennis className="w-5 h-5" />}
-              {sport === 'eFootball' && <Monitor className="w-5 h-5" />}
-              {sport === 'Table Tennis' && <Table2 className="w-5 h-5" />}
-              {sport === 'eBasketball' && <Monitor className="w-5 h-5" />}
-              {sport === 'Ice Hockey' && <IceHockey className="w-5 h-5" />}
-              {sport === 'Handball' && <Hand className="w-5 h-5" />}
-              {sport === 'More Sports' && <MoreHorizontal className="w-5 h-5" />}
-              {sport === 'Home' && <Home className="w-5 h-5" />}
-              <span className="text-[10px] font-medium whitespace-nowrap">{sport}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {selections.length > 0 && (
         <div className="md:hidden fixed bottom-20 left-0 w-full bg-gray-900 border-t border-gray-800 p-4 z-40 flex items-center justify-between shadow-2xl">
           <div><p className="text-xs text-gray-400">{selections.length} Selection(s)</p><p className="text-green-500 font-bold">{formatMoney(potentialWin)}</p></div>
@@ -748,8 +602,165 @@ export default function Home() {
 
       {notification && (<div className="fixed top-20 right-4 z-[110] bg-green-500 text-gray-950 px-6 py-3 rounded-lg shadow-xl font-bold flex items-center gap-2 animate-bounce">{notification}</div>)}
 
-      <main className="container mx-auto px-4 py-8">
-        {renderMainArea()}
+      <main className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* LEFT SIDEBAR */}
+        <aside className="hidden lg:block lg:col-span-3 space-y-4">
+          <div className="bg-gray-900 rounded-lg border border-gray-800 p-4">
+            <h3 className="font-semibold text-white mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-green-500" /> Popular Sports</h3>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li className="flex items-center justify-between p-2 rounded-md bg-gray-950 border border-gray-800 text-white cursor-pointer hover:border-green-500 transition-colors"><span>⚽ Soccer</span><span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse font-bold">142</span></li>
+              <li className="flex items-center justify-between p-2 rounded-md hover:bg-gray-950 cursor-pointer transition-colors"><span>🏀 Basketball</span><span className="text-xs">45</span></li>
+            </ul>
+          </div>
+          <div className="bg-gray-900 rounded-lg border border-green-500/30 p-4">
+            <h3 className="font-semibold text-white mb-3 flex items-center gap-2"><Users className="w-4 h-4 text-green-500" /> Expert Picks</h3>
+            <div className="space-y-3">
+              {expertPicks.map((pick) => (
+                <div key={pick.id} className="bg-gray-950/50 p-3 rounded border border-gray-800">
+                  <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded">{pick.confidence} Confidence</span>
+                  <p className="text-xs text-gray-400 my-1">{pick.matchName}</p>
+                  <div className="flex items-center justify-between"><span className="text-sm font-medium text-white">{pick.outcome}</span><span className="text-sm font-bold text-green-500">{pick.odds.toFixed(2)}</span></div>
+                  <button onClick={() => handleCopyExpertPick(pick)} className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 bg-gray-800 hover:bg-green-600 text-gray-300 hover:text-white text-xs font-bold rounded transition-colors"><Copy className="w-3 h-3" /> Copy to Betslip</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* MIDDLE COLUMN */}
+        <section className="lg:col-span-6 space-y-6">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-2 overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 min-w-max">
+              {['Sports', 'Games', 'Live Betting', 'Scheduled Virtuals', 'Jackpot', 'Livescore', 'Results', 'Promotions', 'Sporty Loyalty', 'App', 'GMT+00:00'].map((item) => (
+                <button key={item} onClick={() => setActiveTopNav(item)} className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold transition-all min-h-[44px] whitespace-nowrap ${activeTopNav === item ? 'bg-green-500 text-gray-950' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white border border-gray-700'}`}>
+                  {item === 'Sports' && <Target className="w-3.5 h-3.5" />}
+                  {item === 'Games' && <Monitor className="w-3.5 h-3.5" />}
+                  {item === 'Live Betting' && <Timer className="w-3.5 h-3.5" />}
+                  {item === 'Scheduled Virtuals' && <Calendar className="w-3.5 h-3.5" />}
+                  {item === 'Jackpot' && <Trophy className="w-3.5 h-3.5" />}
+                  {item === 'Livescore' && <Activity className="w-3.5 h-3.5" />}
+                  {item === 'Results' && <History className="w-3.5 h-3.5" />}
+                  {item === 'Promotions' && <Gift className="w-3.5 h-3.5" />}
+                  {item === 'Sporty Loyalty' && <Star className="w-3.5 h-3.5" />}
+                  {item === 'App' && <Smartphone className="w-3.5 h-3.5" />}
+                  {item === 'GMT+00:00' && <Globe className="w-3.5 h-3.5" />}
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-2 overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 min-w-max">
+              {['Home', 'Football', 'vFootball', 'Basketball', 'Tennis', 'eFootball', 'Table Tennis', 'eBasketball', 'Ice Hockey', 'Handball', 'More Sports'].map((sport) => (
+                <button key={sport} onClick={() => setActiveSport(sport)} className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg min-w-[60px] min-h-[44px] transition-all ${activeSport === sport ? 'text-green-500 bg-green-500/10' : 'text-gray-500 hover:text-gray-300'}`}>
+                  {sport === 'Football' && <Target className="w-5 h-5" />}
+                  {sport === 'vFootball' && <Monitor className="w-5 h-5" />}
+                  {sport === 'Basketball' && <CircleDot className="w-5 h-5" />}
+                  {sport === 'Tennis' && <Disc className="w-5 h-5" />}
+                  {sport === 'eFootball' && <Monitor className="w-5 h-5" />}
+                  {sport === 'Table Tennis' && <LayoutGrid className="w-5 h-5" />}
+                  {sport === 'eBasketball' && <Monitor className="w-5 h-5" />}
+                  {sport === 'Ice Hockey' && <Snowflake className="w-5 h-5" />}
+                  {sport === 'Handball' && <HandMetal className="w-5 h-5" />}
+                  {sport === 'More Sports' && <MoreHorizontal className="w-5 h-5" />}
+                  {sport === 'Home' && <Home className="w-5 h-5" />}
+                  <span className="text-[10px] font-medium whitespace-nowrap">{sport}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {renderMiddleContent()}
+        </section>
+
+        {/* RIGHT SIDEBAR - BETSLIP (ALWAYS VISIBLE) */}
+        <aside id="mobile-betslip" className="lg:col-span-3">
+          <div className="bg-gray-900 rounded-lg border border-gray-800 p-4 lg:sticky lg:top-24">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-white flex items-center gap-2">Betslip {selections.length > 0 && <span className="bg-green-500 text-gray-950 text-xs px-2 py-0.5 rounded-full font-bold">{selections.length}</span>}</h3>
+              {selections.length > 0 && (<button onClick={handleShareBetslip} className="text-gray-400 hover:text-green-500 transition-colors"><Share2 className="w-4 h-4" /></button>)}
+            </div>
+
+            <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
+              <div className="flex items-center gap-2 mb-2">
+                <Ticket className="w-4 h-4 text-green-500" />
+                <span className="text-xs font-bold text-white">Load Booking Code</span>
+              </div>
+              <div className="flex gap-2">
+                <input type="text" value={bookingCode} onChange={(e) => setBookingCode(e.target.value.toUpperCase())} placeholder="e.g. WC2026" className="flex-1 h-8 rounded bg-gray-900 border border-gray-800 text-xs text-white px-2 focus:outline-none focus:ring-1 focus:ring-green-500 uppercase" />
+                <button onClick={() => loadBookingCode(bookingCode)} className="h-8 px-3 bg-green-600 text-white rounded text-xs font-bold hover:bg-green-700">Load</button>
+              </div>
+            </div>
+
+            <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
+              <div className="flex items-center justify-between mb-2"><span className="text-xs font-bold text-white flex items-center gap-1"><Zap className="w-3 h-3 text-yellow-500" /> Quick Bet</span><button onClick={toggleQuickBet} className={`w-10 h-5 rounded-full relative transition-colors ${quickBetEnabled ? 'bg-green-500' : 'bg-gray-700'}`}><div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${quickBetEnabled ? 'left-5' : 'left-0.5'}`} /></button></div>
+              {quickBetEnabled && (<div className="flex items-center gap-2"><span className="text-xs text-gray-400">Stake:</span><input type="number" value={quickBetStake} onChange={(e) => setQuickBetStake(parseFloat(e.target.value) || 0)} className="w-20 h-7 rounded bg-gray-900 border border-gray-800 text-xs text-white text-center focus:outline-none focus:ring-1 focus:ring-green-500" /><span className="text-xs text-gray-500">{currency}</span></div>)}
+            </div>
+
+            <div className="space-y-3 mb-4 min-h-[100px]">
+              {selections.length === 0 ? (<p className="text-center text-gray-500 text-sm py-8">Click an odd to add to your betslip</p>) : (
+                selections.map((sel) => (
+                  <div key={sel.id} className="bg-gray-950 p-3 rounded border border-gray-800 relative group">
+                    <button onClick={() => removeSelection(sel.id)} className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition-colors"><X className="w-4 h-4" /></button>
+                    <span className="text-xs text-gray-500">{sel.market}</span><p className="text-sm font-medium text-white mb-1">{sel.matchName}</p><p className="text-xs text-gray-400 mb-2">{sel.outcome}</p><span className="text-green-500 font-bold">{sel.odds.toFixed(2)}</span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {selections.length > 0 && (
+              <div className="p-3 bg-gray-950 rounded-lg border border-gray-800 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-white flex items-center gap-1"><Ticket className="w-3 h-3 text-blue-400" /> Share Betslip</span>
+                </div>
+                {generatedCode ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-gray-900 border border-green-500/30 rounded p-2 text-center">
+                      <p className="text-[10px] text-gray-400">Your Booking Code</p>
+                      <p className="text-lg font-bold text-green-400 tracking-wider">{generatedCode}</p>
+                    </div>
+                    <button onClick={() => { navigator.clipboard.writeText(generatedCode); setNotification("📋 Code copied!"); setTimeout(() => setNotification(null), 2000); }} className="h-12 px-3 bg-green-600 text-white rounded text-xs font-bold hover:bg-green-700 transition-colors">Copy</button>
+                  </div>
+                ) : (
+                  <button onClick={() => { const code = generateBookingCode(); setGeneratedCode(code); }} className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2">
+                    <Share2 className="w-3 h-3" /> Generate Booking Code
+                  </button>
+                )}
+              </div>
+            )}
+
+            {selections.length > 0 && (
+              <div className="space-y-3 border-t border-gray-800 pt-4">
+                {freeBetBalance > 0 && (
+                  <div className="flex items-center justify-between p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Gift className="w-4 h-4 text-green-500" />
+                      <span className="text-xs font-bold text-green-400">Use Free Bet (GHS {freeBetBalance.toFixed(2)})</span>
+                    </div>
+                    <button onClick={toggleFreeBet} className={`w-10 h-5 rounded-full relative transition-colors ${useFreeBet ? 'bg-green-500' : 'bg-gray-700'}`}>
+                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${useFreeBet ? 'left-5' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                )}
+
+                {!useFreeBet && (
+                  <>
+                    <div className="flex gap-2">{[10, 50, 100].map((amt) => (<button key={amt} onClick={() => setStake(amt)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">{formatMoney(amt)}</button>))}<button onClick={() => setStake(walletBalance)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">MAX</button></div>
+                    <div><label className="text-xs text-gray-400 mb-1 block">Stake ({currency})</label><input type="number" placeholder="0.00" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-right font-bold" value={stake === 0 ? '' : stake} onChange={(e) => setStake(parseFloat(e.target.value) || 0)} /></div>
+                  </>
+                )}
+                
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Total Odds:</span><span className="text-white font-bold">{totalOdds.toFixed(2)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Potential Win:</span><span className="text-green-500 font-bold">{formatMoney(potentialWin)}</span></div>
+                <button disabled={isCoolOffActive} className={`w-full h-12 px-8 rounded-md font-bold text-base transition-colors flex items-center justify-center gap-2 ${isCoolOffActive ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-green-500 text-gray-950 hover:bg-green-600'}`} onClick={initiatePlaceBet}>
+                  <Lock className="w-4 h-4" /> {isCoolOffActive ? 'Cool-Off Active' : 'Place Bet'}
+                </button>
+              </div>
+            )}
+          </div>
+        </aside>
       </main>
 
       <footer className="border-t border-gray-800 bg-gray-900 mt-12 py-8">

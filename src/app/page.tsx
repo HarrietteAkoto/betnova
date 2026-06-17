@@ -6,7 +6,7 @@ import { useBetslipStore } from "../store/useBetslipStore";
 import { 
   Home, Ticket, User, Soccer, Monitor, Basketball, Tennis, Table2, IceHockey, Hand, MoreHorizontal,
   Trophy, Timer, Calendar, Grid3X3, Activity, History, Gift, Star, Smartphone, Globe,
-  ChevronDown, ChevronUp, CheckSquare, X, Lock, Flame, Award, ClipboardList, BarChart3, TrendingUp, ArrowLeft, MessageCircle, Share2, Zap, Search, Crown, ShieldAlert, Tag
+  ChevronDown, ChevronUp, X, Lock, Flame, Award, ClipboardList, BarChart3, TrendingUp, ArrowLeft, MessageCircle, Share2, Tag
 } from "lucide-react";
 
 // --- SAMPLE DATA ---
@@ -26,7 +26,7 @@ const liveScores = [
 ];
 
 export default function Home() {
-  const { selections, addSelection, removeSelection, stake, setStake, totalOdds, potentialWin, placeBet, walletBalance, transactionPin, freeBetBalance, useFreeBet, toggleFreeBet, loadBookingCode, generateBookingCode, bookingCode, setBookingCode } = useBetslipStore();
+  const { selections, addSelection, removeSelection, stake, setStake, totalOdds, potentialWin, placeBet, walletBalance, transactionPin, freeBetBalance, useFreeBet, toggleFreeBet, loadBookingCode } = useBetslipStore();
   
   const [activeTopNav, setActiveTopNav] = useState<string>('Sports');
   const [activeSport, setActiveSport] = useState<string>('Football');
@@ -44,7 +44,7 @@ export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isCoolOffModalOpen, setIsCoolOffModalOpen] = useState(false);
   const [promoInput, setPromoInput] = useState("");
-  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
+  const [bookingCode, setBookingCode] = useState("");
   const [authPhone, setAuthPhone] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [authGhanaCard, setAuthGhanaCard] = useState("");
@@ -103,7 +103,6 @@ export default function Home() {
                   </div>
                 </div>
                 
-                {/* Tabbed Interface */}
                 <div className="flex border-b border-gray-800 bg-[#151515]">
                   {(['markets', 'stats', 'codes'] as const).map(tab => (
                     <button key={tab} onClick={() => setActiveMarketTab(tab)} className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 ${activeMarketTab === tab ? 'text-[#00e676] border-b-2 border-[#00e676]' : 'text-gray-500'}`}>
@@ -346,14 +345,14 @@ export default function Home() {
 
       {/* Sticky Bottom Betslip */}
       {selections.length > 0 && (
-        <div className="fixed bottom-16 left-0 w-full bg-[#1a1a1a] border-t border-[#00e676]/30 p-4 z-40 shadow-2xl animate-in slide-in-from-bottom-4">
+        <div id="betslip-panel" className="fixed bottom-16 left-0 w-full bg-[#1a1a1a] border-t border-[#00e676]/30 p-4 z-40 shadow-2xl animate-in slide-in-from-bottom-4">
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-xs text-gray-400">{selections.length} Selection(s)</p>
               <p className="text-[#00e676] font-bold text-lg">GHS {potentialWin.toFixed(2)}</p>
             </div>
-            <button onClick={() => {}} className="px-6 py-2.5 bg-[#00e676] text-black rounded-md font-bold text-sm hover:bg-[#00cc6a] transition-colors min-h-[44px]">
-              View Betslip
+            <button onClick={initiateBet} className="px-6 py-2.5 bg-[#00e676] text-black rounded-md font-bold text-sm hover:bg-[#00cc6a] transition-colors min-h-[44px]">
+              Place Bet
             </button>
           </div>
         </div>

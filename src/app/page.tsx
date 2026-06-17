@@ -10,6 +10,13 @@ interface MatchOdds { id: string; matchId: string; matchName: string; market: st
 interface MatchMarkets { main: { home: MatchOdds; draw: MatchOdds; away: MatchOdds }; extra?: { over: MatchOdds; under: MatchOdds; btts: MatchOdds }; special?: { dc1x: MatchOdds; dcx2: MatchOdds; cs: MatchOdds }; }
 interface MatchData { id: string; home: string; away: string; score: string; status: string; isLive: boolean; sport: string; stats: string; form: string[]; markets: MatchMarkets; }
 
+// NEW: CAROUSEL IMAGES
+const carouselImages = [
+  { id: 1, url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=80', title: 'UEFA Champions League', subtitle: 'Bet on Europe\'s Elite Clubs' },
+  { id: 2, url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', title: 'FIFA World Cup 2026', subtitle: 'Ghana vs Brazil - Special Odds!' },
+  { id: 3, url: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80', title: 'NBA Playoffs', subtitle: 'Lakers vs Celtics Live Now' },
+];
+
 const initialMatches: MatchData[] = [
   { id: 'wc-1', home: 'Ghana', away: 'Brazil', score: 'VS', status: "FIFA World Cup 2026 • Group Stage", isLive: false, sport: 'soccer', form: ['W','W','D','W','L'], stats: "Ghana looking strong in qualifiers.", markets: { main: { home: { id: 'wc-h', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Match Winner', outcome: 'Ghana (1)', odds: 4.50 }, draw: { id: 'wc-d', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Match Winner', outcome: 'Draw (X)', odds: 3.20 }, away: { id: 'wc-a', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Match Winner', outcome: 'Brazil (2)', odds: 1.65 } }, extra: { over: { id: 'wc-o', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Total Goals', outcome: 'Over 2.5', odds: 1.80 }, under: { id: 'wc-u', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Total Goals', outcome: 'Under 2.5', odds: 1.95 }, btts: { id: 'wc-b', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Both Teams to Score', outcome: 'Yes', odds: 1.75 } }, special: { dc1x: { id: 'wc-dc1', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Double Chance', outcome: 'Ghana or Draw (1X)', odds: 1.90 }, dcx2: { id: 'wc-dc2', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Double Chance', outcome: 'Brazil or Draw (X2)', odds: 1.25 }, cs: { id: 'wc-cs', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Correct Score', outcome: '1 - 1', odds: 6.50 } } } },
   { id: '1', home: 'Real Madrid', away: 'Manchester City', score: '2 - 1', status: "Champions League • 67'", isLive: true, sport: 'soccer', form: ['W','W','W','D','W'], stats: "Real Madrid has won 4 of their last 5 matches.", markets: { main: { home: { id: '1-1', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Real Madrid (1)', odds: 2.45 }, draw: { id: '1-x', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Draw (X)', odds: 3.10 }, away: { id: '1-2', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Man City (2)', odds: 2.80 } }, extra: { over: { id: '1-o', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Total Goals', outcome: 'Over 2.5', odds: 1.85 }, under: { id: '1-u', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Total Goals', outcome: 'Under 2.5', odds: 1.95 }, btts: { id: '1-b', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Both Teams to Score', outcome: 'Yes', odds: 1.70 } } } },
@@ -21,7 +28,7 @@ const expertPicks = [{ id: 'ep-1', matchName: 'Ghana vs Brazil', market: 'Double
 const liveCommentary = ["67' ⚽ GOAL! Real Madrid takes the lead!", "65' 🟨 Yellow card for Rodri.", "62' 🔄 Substitution: Grealish ON."];
 
 export default function Home() {
-  const { selections, stake, mode, setStake, toggleMode, removeSelection, clearBetslip, placeBet, claimDailyBonus, hasClaimedBonus, quickBetEnabled, toggleQuickBet, quickBetStake, setQuickBetStake, totalWagered, addSelection, achievements, isCoolOffActive, applyPromoCode, activateCoolOff, deactivateCoolOff, currency, setCurrency, favorites, toggleFavorite, transactionPin, freeBetBalance, useFreeBet, toggleFreeBet, loadBookingCode } = useBetslipStore();
+  const { selections, stake, mode, setStake, toggleMode, removeSelection, clearBetslip, placeBet, claimDailyBonus, hasClaimedBonus, quickBetEnabled, toggleQuickBet, quickBetStake, setQuickBetStake, totalWagered, addSelection, achievements, isCoolOffActive, applyPromoCode, activateCoolOff, deactivateCoolOff, currency, setCurrency, favorites, toggleFavorite, transactionPin, freeBetBalance, useFreeBet, toggleFreeBet, loadBookingCode, generateBookingCode } = useBetslipStore();
   
   const [notification, setNotification] = useState<string | null>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -42,16 +49,18 @@ export default function Home() {
   const [commentaryIndex, setCommentaryIndex] = useState(0);
   const [bookingCode, setBookingCode] = useState("");
   
-  // PIN Modal State
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pinInput, setPinInput] = useState("");
 
-  // Auth Form State
   const [authPhone, setAuthPhone] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [authGhanaCard, setAuthGhanaCard] = useState("");
   const [authOtp, setAuthOtp] = useState("");
   const [showOtpStep, setShowOtpStep] = useState(false);
+
+  // NEW: CAROUSEL & SHARE STATES
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
 
   const [walletBalance, setWalletBalance] = useState<number>(() => { if (typeof window !== 'undefined') { const saved = localStorage.getItem('betnova_wallet'); return saved ? parseFloat(saved) : 1500; } return 1500; });
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => { if (typeof window !== 'undefined') { return localStorage.getItem('betnova_logged_in') === 'true'; } return false; });
@@ -73,6 +82,19 @@ export default function Home() {
 
   useEffect(() => { if (typeof window !== 'undefined') localStorage.setItem('betnova_wallet', walletBalance.toString()); }, [walletBalance]);
   useEffect(() => { if (typeof window !== 'undefined') localStorage.setItem('betnova_logged_in', isLoggedIn.toString()); }, [isLoggedIn]);
+
+  // NEW: AUTO-SLIDE CAROUSEL
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // NEW: RESET GENERATED CODE WHEN BETSLIP CHANGES
+  useEffect(() => {
+    setGeneratedCode(null);
+  }, [selections]);
 
   useEffect(() => {
     const interval = setInterval(() => setCommentaryIndex(prev => (prev + 1) % liveCommentary.length), 8000);
@@ -133,8 +155,6 @@ export default function Home() {
     if (selections.length === 0) { setNotification("🚫 Please select an outcome!"); setTimeout(() => setNotification(null), 3000); return; }
     if (!useFreeBet && stake <= 0) { setNotification("🚫 Enter a valid stake!"); setTimeout(() => setNotification(null), 3000); return; }
     if (!useFreeBet && stake > walletBalance) { setNotification("🚫 Insufficient balance!"); setTimeout(() => setNotification(null), 3000); return; }
-    
-    // Open PIN Modal
     setIsPinModalOpen(true);
     setPinInput("");
   };
@@ -163,7 +183,6 @@ export default function Home() {
 
   const handleDeposit = () => {
     if (depositAmount > 0) {
-      // Mock 50% First Deposit Bonus
       const bonus = depositAmount * 0.5;
       const totalAdded = depositAmount + bonus;
       setWalletBalance(prev => prev + totalAdded);
@@ -192,7 +211,6 @@ export default function Home() {
       setTimeout(() => { setNotification(null); setAuthTab('login'); setShowOtpStep(false); }, 2000);
       return;
     }
-    // Login or OTP Verify
     setIsLoggedIn(true);
     localStorage.setItem('betnova_logged_in', 'true');
     setIsAuthOpen(false);
@@ -315,6 +333,28 @@ export default function Home() {
         </aside>
 
         <section className="lg:col-span-6 space-y-6">
+          {/* NEW: MOVING SPORTS CAROUSEL */}
+          <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+            {carouselImages.map((img, index) => (
+              <div 
+                key={img.id} 
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+              >
+                <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-6">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-1 drop-shadow-lg">{img.title}</h3>
+                  <p className="text-sm md:text-base text-green-400 font-medium drop-shadow-md">{img.subtitle}</p>
+                </div>
+              </div>
+            ))}
+            <div className="absolute bottom-4 right-4 flex gap-2 z-10">
+              {carouselImages.map((_, index) => (
+                <button key={index} onClick={() => setCurrentSlide(index)} className={`h-2 rounded-full transition-all ${index === currentSlide ? 'bg-green-500 w-6' : 'bg-white/50 w-2'}`} />
+              ))}
+            </div>
+          </div>
+
           <div className="bg-gradient-to-r from-green-900/40 to-gray-900 border border-green-500/30 rounded-xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3"><div className="p-2 bg-green-500/20 rounded-lg"><Zap className="w-6 h-6 text-green-500" /></div><div><h3 className="font-bold text-white text-sm">⚡ 10% Acca Boost!</h3><p className="text-xs text-gray-400">Get 10% extra on your winnings for 5+ selections.</p></div></div>
             <button className="px-4 py-2 bg-green-500 text-gray-950 text-xs font-bold rounded-md hover:bg-green-600 transition-colors">Claim Now</button>
@@ -368,7 +408,6 @@ export default function Home() {
                   <OddsButton selection={match.markets.main.away} />
                 </div>
                 
-                {/* Expanded Markets */}
                 {match.sport === 'soccer' && (
                   <div>
                     <button onClick={() => setOpenMarketsId(openMarketsId === match.id ? null : match.id)} className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors font-medium mt-2">
@@ -406,7 +445,6 @@ export default function Home() {
               {selections.length > 0 && (<button onClick={handleShareBetslip} className="text-gray-400 hover:text-green-500 transition-colors"><Share2 className="w-4 h-4" /></button>)}
             </div>
 
-            {/* NEW: Booking Code Loader */}
             <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
               <div className="flex items-center gap-2 mb-2">
                 <Ticket className="w-4 h-4 text-green-500" />
@@ -434,9 +472,30 @@ export default function Home() {
               )}
             </div>
 
+            {/* NEW: SHARE BETSLIP / GENERATE CODE */}
+            {selections.length > 0 && (
+              <div className="p-3 bg-gray-950 rounded-lg border border-gray-800 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-white flex items-center gap-1"><Ticket className="w-3 h-3 text-blue-400" /> Share Betslip</span>
+                </div>
+                {generatedCode ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-gray-900 border border-green-500/30 rounded p-2 text-center">
+                      <p className="text-[10px] text-gray-400">Your Booking Code</p>
+                      <p className="text-lg font-bold text-green-400 tracking-wider">{generatedCode}</p>
+                    </div>
+                    <button onClick={() => { navigator.clipboard.writeText(generatedCode); setNotification("📋 Code copied!"); setTimeout(() => setNotification(null), 2000); }} className="h-12 px-3 bg-green-600 text-white rounded text-xs font-bold hover:bg-green-700 transition-colors">Copy</button>
+                  </div>
+                ) : (
+                  <button onClick={() => { const code = generateBookingCode(); setGeneratedCode(code); }} className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2">
+                    <Share2 className="w-3 h-3" /> Generate Booking Code
+                  </button>
+                )}
+              </div>
+            )}
+
             {selections.length > 0 && (
               <div className="space-y-3 border-t border-gray-800 pt-4">
-                {/* NEW: Free Bet Toggle */}
                 {freeBetBalance > 0 && (
                   <div className="flex items-center justify-between p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
                     <div className="flex items-center gap-2">
@@ -471,7 +530,6 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center text-sm text-gray-500"><p className="mb-2">18+ Play Responsibly. Licensed by the Gaming Commission.</p><p>© 2026 BetNova. All rights reserved.</p></div>
       </footer>
 
-      {/* --- NEW: TRANSACTION PIN MODAL --- */}
       {isPinModalOpen && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
@@ -489,7 +547,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* --- NEW: ENHANCED AUTH MODAL (Login / Register / Forgot / OTP) --- */}
       {isAuthOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => { setIsAuthOpen(false); setShowOtpStep(false); setAuthTab('login'); }} />
@@ -546,7 +603,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Deposit Modal (with 50% Bonus Banner) */}
       {isDepositOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsDepositOpen(false)} /><div className="relative bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl"><button onClick={() => setIsDepositOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X className="w-6 h-6" /></button><h2 className="text-2xl font-bold text-white mb-2">Deposit Funds</h2>
         <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4 flex items-center gap-3">
@@ -560,7 +616,6 @@ export default function Home() {
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsCoolOffModalOpen(false)} /><div className="relative bg-gray-900 border-2 border-red-500/50 rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center"><ShieldAlert className="w-12 h-12 text-red-500 mx-auto mb-4" /><h2 className="text-xl font-bold text-white mb-2">Self-Exclusion / Cool-Off</h2><p className="text-sm text-gray-400 mb-6">Temporarily lock your account to play responsibly.</p><div className="grid grid-cols-3 gap-2 mb-4">{[{h:24, l:'24h'}, {h:168, l:'7 Days'}, {h:720, l:'30 Days'}].map((c) => (<button key={c.h} onClick={() => { activateCoolOff(c.h); setIsCoolOffModalOpen(false); }} className="py-2 rounded-md font-bold bg-gray-800 text-white hover:bg-red-500 transition-colors">{c.l}</button>))}</div><button onClick={deactivateCoolOff} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mb-2">Unlock Early</button><button onClick={() => setIsCoolOffModalOpen(false)} className="w-full h-11 bg-gray-800 text-gray-300 rounded-md font-bold text-base hover:bg-gray-700 transition-colors">Cancel</button></div></div>
       )}
 
-      {/* --- BOTTOM NAVIGATION BAR --- */}
       <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-50 pb-4">
         <div className="container mx-auto max-w-lg flex items-center justify-around py-3">
           <Link href="/" className="flex flex-col items-center gap-1 text-green-500 hover:text-green-400 transition-colors">

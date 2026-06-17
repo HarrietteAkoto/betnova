@@ -4,27 +4,28 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { OddsButton } from "../features/OddsButton";
 import { useBetslipStore } from "../store/useBetslipStore";
-import { TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, Zap, Search, Trophy, Bell, Play, ShieldAlert, Crown, Users, Copy, Tag, Star, Globe, Gamepad2, Wallet } from "lucide-react";
+import { TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, Zap, Search, Trophy, Bell, Play, ShieldAlert, Crown, Users, Copy, Tag, Star, Globe, Gamepad2, Wallet, Ticket, Lock, Smartphone, CreditCard, HelpCircle, ArrowLeft } from "lucide-react";
 
 interface MatchOdds { id: string; matchId: string; matchName: string; market: string; outcome: string; odds: number; }
-interface MatchMarkets { main: { home: MatchOdds; draw: MatchOdds; away: MatchOdds }; extra?: { over: MatchOdds; under: MatchOdds; btts: MatchOdds }; }
+interface MatchMarkets { main: { home: MatchOdds; draw: MatchOdds; away: MatchOdds }; extra?: { over: MatchOdds; under: MatchOdds; btts: MatchOdds }; special?: { dc1x: MatchOdds; dcx2: MatchOdds; cs: MatchOdds }; }
 interface MatchData { id: string; home: string; away: string; score: string; status: string; isLive: boolean; sport: string; stats: string; form: string[]; markets: MatchMarkets; }
 
 const initialMatches: MatchData[] = [
+  { id: 'wc-1', home: 'Ghana', away: 'Brazil', score: 'VS', status: "FIFA World Cup 2026 • Group Stage", isLive: false, sport: 'soccer', form: ['W','W','D','W','L'], stats: "Ghana looking strong in qualifiers.", markets: { main: { home: { id: 'wc-h', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Match Winner', outcome: 'Ghana (1)', odds: 4.50 }, draw: { id: 'wc-d', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Match Winner', outcome: 'Draw (X)', odds: 3.20 }, away: { id: 'wc-a', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Match Winner', outcome: 'Brazil (2)', odds: 1.65 } }, extra: { over: { id: 'wc-o', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Total Goals', outcome: 'Over 2.5', odds: 1.80 }, under: { id: 'wc-u', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Total Goals', outcome: 'Under 2.5', odds: 1.95 }, btts: { id: 'wc-b', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Both Teams to Score', outcome: 'Yes', odds: 1.75 } }, special: { dc1x: { id: 'wc-dc1', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Double Chance', outcome: 'Ghana or Draw (1X)', odds: 1.90 }, dcx2: { id: 'wc-dc2', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Double Chance', outcome: 'Brazil or Draw (X2)', odds: 1.25 }, cs: { id: 'wc-cs', matchId: 'wc-1', matchName: 'Ghana vs Brazil', market: 'Correct Score', outcome: '1 - 1', odds: 6.50 } } } },
   { id: '1', home: 'Real Madrid', away: 'Manchester City', score: '2 - 1', status: "Champions League • 67'", isLive: true, sport: 'soccer', form: ['W','W','W','D','W'], stats: "Real Madrid has won 4 of their last 5 matches.", markets: { main: { home: { id: '1-1', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Real Madrid (1)', odds: 2.45 }, draw: { id: '1-x', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Draw (X)', odds: 3.10 }, away: { id: '1-2', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Man City (2)', odds: 2.80 } }, extra: { over: { id: '1-o', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Total Goals', outcome: 'Over 2.5', odds: 1.85 }, under: { id: '1-u', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Total Goals', outcome: 'Under 2.5', odds: 1.95 }, btts: { id: '1-b', matchId: '1', matchName: 'Real Madrid vs Man City', market: 'Both Teams to Score', outcome: 'Yes', odds: 1.70 } } } },
-  { id: '2', home: 'Arsenal', away: 'Liverpool', score: 'VS', status: "Premier League • Today 20:00", isLive: false, sport: 'soccer', form: ['W','D','W','L','W'], stats: "Head-to-Head: Arsenal 2 - 3 Liverpool (Last 5)", markets: { main: { home: { id: '2-1', matchId: '2', matchName: 'Arsenal vs Liverpool', market: 'Match Winner', outcome: 'Arsenal (1)', odds: 2.10 }, draw: { id: '2-x', matchId: '2', matchName: 'Arsenal vs Liverpool', market: 'Match Winner', outcome: 'Draw (X)', odds: 3.40 }, away: { id: '2-2', matchId: '2', matchName: 'Arsenal vs Liverpool', market: 'Match Winner', outcome: 'Liverpool (2)', odds: 3.25 } }, extra: { over: { id: '2-o', matchId: '2', matchName: 'Arsenal vs Liverpool', market: 'Total Goals', outcome: 'Over 2.5', odds: 1.90 }, under: { id: '2-u', matchId: '2', matchName: 'Arsenal vs Liverpool', market: 'Total Goals', outcome: 'Under 2.5', odds: 1.90 }, btts: { id: '2-b', matchId: '2', matchName: 'Arsenal vs Liverpool', market: 'Both Teams to Score', outcome: 'Yes', odds: 1.65 } } } },
   { id: '3', home: 'LA Lakers', away: 'Boston Celtics', score: '88 - 92', status: "NBA • 3rd Qtr", isLive: true, sport: 'basketball', form: ['L','W','W','W','L'], stats: "Celtics are on a 12-0 run in the 3rd quarter.", markets: { main: { home: { id: '3-1', matchId: '3', matchName: 'Lakers vs Celtics', market: 'Match Winner', outcome: 'Lakers (1)', odds: 1.90 }, draw: { id: '3-x', matchId: '3', matchName: 'Lakers vs Celtics', market: 'Match Winner', outcome: 'Draw (X)', odds: 15.00 }, away: { id: '3-2', matchId: '3', matchName: 'Lakers vs Celtics', market: 'Match Winner', outcome: 'Celtics (2)', odds: 1.95 } } } }
 ];
 
 const recentWinners = ["🔥 Kwame just won GHS 4,500 on Real Madrid!", "🎉 Ama cashed out GHS 1,200 on Lakers!", "⚽ Yaw hit a 5-fold Acca for GHS 12,000!"];
-const expertPicks = [{ id: 'ep-1', matchName: 'Real Madrid vs Man City', market: 'Match Winner', outcome: 'Real Madrid (1)', odds: 2.45, confidence: '92%' }];
+const expertPicks = [{ id: 'ep-1', matchName: 'Ghana vs Brazil', market: 'Double Chance', outcome: 'Ghana or Draw (1X)', odds: 1.90, confidence: '85%' }];
 const liveCommentary = ["67' ⚽ GOAL! Real Madrid takes the lead!", "65' 🟨 Yellow card for Rodri.", "62' 🔄 Substitution: Grealish ON."];
 
 export default function Home() {
-  const { selections, stake, mode, setStake, toggleMode, removeSelection, clearBetslip, placeBet, claimDailyBonus, hasClaimedBonus, quickBetEnabled, toggleQuickBet, quickBetStake, setQuickBetStake, totalWagered, addSelection, achievements, isCoolOffActive, applyPromoCode, activateCoolOff, deactivateCoolOff, currency, setCurrency, favorites, toggleFavorite } = useBetslipStore();
+  const { selections, stake, mode, setStake, toggleMode, removeSelection, clearBetslip, placeBet, claimDailyBonus, hasClaimedBonus, quickBetEnabled, toggleQuickBet, quickBetStake, setQuickBetStake, totalWagered, addSelection, achievements, isCoolOffActive, applyPromoCode, activateCoolOff, deactivateCoolOff, currency, setCurrency, favorites, toggleFavorite, transactionPin, freeBetBalance, useFreeBet, toggleFreeBet, loadBookingCode } = useBetslipStore();
   
   const [notification, setNotification] = useState<string | null>(null);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authTab, setAuthTab] = useState<'login' | 'register' | 'forgot'>('login');
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -39,6 +40,18 @@ export default function Home() {
   const [promoInput, setPromoInput] = useState("");
   const [isWatchLiveOpen, setIsWatchLiveOpen] = useState<string | null>(null);
   const [commentaryIndex, setCommentaryIndex] = useState(0);
+  const [bookingCode, setBookingCode] = useState("");
+  
+  // PIN Modal State
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+
+  // Auth Form State
+  const [authPhone, setAuthPhone] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authGhanaCard, setAuthGhanaCard] = useState("");
+  const [authOtp, setAuthOtp] = useState("");
+  const [showOtpStep, setShowOtpStep] = useState(false);
 
   const [walletBalance, setWalletBalance] = useState<number>(() => { if (typeof window !== 'undefined') { const saved = localStorage.getItem('betnova_wallet'); return saved ? parseFloat(saved) : 1500; } return 1500; });
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => { if (typeof window !== 'undefined') { return localStorage.getItem('betnova_logged_in') === 'true'; } return false; });
@@ -106,7 +119,7 @@ export default function Home() {
         const fluctuate = (odd: number) => { const change = (Math.random() - 0.5) * 0.1; return Math.max(1.01, parseFloat((odd + change).toFixed(2))); };
         return { 
           ...match, score: newScore, status: newStatus,
-          markets: { ...match.markets, main: { home: { ...match.markets.main.home, odds: fluctuate(match.markets.main.home.odds) }, draw: { ...match.markets.main.draw, odds: fluctuate(match.markets.main.draw.odds) }, away: { ...match.markets.main.away, odds: fluctuate(match.markets.main.away.odds) } }, extra: match.markets.extra ? { over: { ...match.markets.extra.over, odds: fluctuate(match.markets.extra.over.odds) }, under: { ...match.markets.extra.under, odds: fluctuate(match.markets.extra.under.odds) }, btts: { ...match.markets.extra.btts, odds: fluctuate(match.markets.extra.btts.odds) } } : undefined }
+          markets: { ...match.markets, main: { home: { ...match.markets.main.home, odds: fluctuate(match.markets.main.home.odds) }, draw: { ...match.markets.main.draw, odds: fluctuate(match.markets.main.draw.odds) }, away: { ...match.markets.main.away, odds: fluctuate(match.markets.main.away.odds) } }, extra: match.markets.extra ? { over: { ...match.markets.extra.over, odds: fluctuate(match.markets.extra.over.odds) }, under: { ...match.markets.extra.under, odds: fluctuate(match.markets.extra.under.odds) }, btts: { ...match.markets.extra.btts, odds: fluctuate(match.markets.extra.btts.odds) } } : undefined, special: match.markets.special }
         };
       }));
     }, 5000);
@@ -115,14 +128,27 @@ export default function Home() {
 
   useEffect(() => { if (lastGoal) { setNotification(`⚽ GOAL! ${lastGoal}`); setTimeout(() => setLastGoal(null), 4000); } }, [lastGoal]);
 
-  const handlePlaceBet = () => {
+  const initiatePlaceBet = () => {
     if (isCoolOffActive) { setNotification("🔒 Account is in Cool-Off."); setTimeout(() => setNotification(null), 3000); return; }
     if (selections.length === 0) { setNotification("🚫 Please select an outcome!"); setTimeout(() => setNotification(null), 3000); return; }
-    if (stake <= 0) { setNotification("🚫 Enter a valid stake!"); setTimeout(() => setNotification(null), 3000); return; }
-    if (stake > walletBalance) { setNotification("🚫 Insufficient balance!"); setTimeout(() => setNotification(null), 3000); return; }
-    setWalletBalance(prev => prev - stake);
+    if (!useFreeBet && stake <= 0) { setNotification("🚫 Enter a valid stake!"); setTimeout(() => setNotification(null), 3000); return; }
+    if (!useFreeBet && stake > walletBalance) { setNotification("🚫 Insufficient balance!"); setTimeout(() => setNotification(null), 3000); return; }
+    
+    // Open PIN Modal
+    setIsPinModalOpen(true);
+    setPinInput("");
+  };
+
+  const confirmPlaceBet = () => {
+    if (pinInput !== transactionPin) {
+      setNotification("🚫 Incorrect Transaction PIN!");
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
+    setIsPinModalOpen(false);
+    if (!useFreeBet) setWalletBalance(prev => prev - stake);
     placeBet(totalOdds, potentialWin); 
-    setNotification(`✅ Placed bet for ${formatMoney(stake)}!`);
+    setNotification(`✅ Placed ${useFreeBet ? 'Free ' : ''}bet for GHS ${useFreeBet ? 0 : stake.toFixed(2)}!`);
     clearBetslip();
     setTimeout(() => setNotification(null), 3000);
   };
@@ -137,8 +163,11 @@ export default function Home() {
 
   const handleDeposit = () => {
     if (depositAmount > 0) {
-      setWalletBalance(prev => prev + depositAmount);
-      setNotification(`✅ Deposited ${formatMoney(depositAmount)}!`);
+      // Mock 50% First Deposit Bonus
+      const bonus = depositAmount * 0.5;
+      const totalAdded = depositAmount + bonus;
+      setWalletBalance(prev => prev + totalAdded);
+      setNotification(`✅ Deposited ${formatMoney(depositAmount)} + ${formatMoney(bonus)} Bonus!`);
       setTimeout(() => setNotification(null), 3000);
       setDepositAmount(0); setIsDepositOpen(false);
     }
@@ -147,6 +176,29 @@ export default function Home() {
   const handleCopyExpertPick = (pick: typeof expertPicks[0]) => {
     addSelection({ id: pick.id, matchId: 'ep', matchName: pick.matchName, market: pick.market, outcome: pick.outcome, odds: pick.odds });
     setNotification(`📋 Copied Expert Pick!`);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (authTab === 'register' && !showOtpStep) {
+      setShowOtpStep(true);
+      setNotification("📱 OTP sent to your phone!");
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
+    if (authTab === 'forgot') {
+      setNotification("✅ Password reset link sent!");
+      setTimeout(() => { setNotification(null); setAuthTab('login'); setShowOtpStep(false); }, 2000);
+      return;
+    }
+    // Login or OTP Verify
+    setIsLoggedIn(true);
+    localStorage.setItem('betnova_logged_in', 'true');
+    setIsAuthOpen(false);
+    setAuthTab('login');
+    setShowOtpStep(false);
+    setNotification("✅ Welcome back, Harriette!");
     setTimeout(() => setNotification(null), 3000);
   };
 
@@ -207,11 +259,11 @@ export default function Home() {
                     <p className="text-sm font-bold text-white">{formatMoney(totalWagered)}</p>
                   </div>
                   <button onClick={() => setIsCoolOffModalOpen(true)} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-800 flex items-center gap-2"><ShieldAlert className="w-4 h-4" /> Cool-Off</button>
-                  <button onClick={() => setIsLoggedIn(false)} className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-gray-800">Logout</button>
+                  <button onClick={() => { setIsLoggedIn(false); localStorage.removeItem('betnova_logged_in'); }} className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-gray-800">Logout</button>
                 </div>
               </div>
             ) : (
-              <button onClick={() => setIsLoginOpen(true)} className="hidden sm:flex h-10 px-4 py-2 bg-green-500 text-gray-950 rounded-md font-bold text-sm hover:bg-green-600 transition-colors">Login</button>
+              <button onClick={() => setIsAuthOpen(true)} className="hidden sm:flex h-10 px-4 py-2 bg-green-500 text-gray-950 rounded-md font-bold text-sm hover:bg-green-600 transition-colors">Login / Register</button>
             )}
           </div>
         </div>
@@ -283,7 +335,7 @@ export default function Home() {
             sortedAndFilteredMatches.map((match) => (
               <div key={match.id} className="bg-gray-900 rounded-lg border border-gray-800 p-4 space-y-4">
                 <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>{match.status}</span>
+                  <span className={match.status.includes("World Cup") ? "text-yellow-400 font-bold" : ""}>{match.status}</span>
                   <div className="flex gap-2">
                     {match.isLive && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse">LIVE</span>}
                     {match.isLive && <button onClick={() => setIsWatchLiveOpen(match.id)} className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-bold flex items-center gap-1 hover:bg-blue-700"><Play className="w-3 h-3 fill-white" /> Watch</button>}
@@ -315,16 +367,29 @@ export default function Home() {
                   <OddsButton selection={match.markets.main.draw} />
                   <OddsButton selection={match.markets.main.away} />
                 </div>
-                {match.sport === 'soccer' && match.markets.extra && (
+                
+                {/* Expanded Markets */}
+                {match.sport === 'soccer' && (
                   <div>
                     <button onClick={() => setOpenMarketsId(openMarketsId === match.id ? null : match.id)} className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors font-medium mt-2">
-                      {openMarketsId === match.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />} More Markets
+                      {openMarketsId === match.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />} More Markets (O/U, BTTS, Double Chance)
                     </button>
                     {openMarketsId === match.id && (
-                      <div className="grid grid-cols-3 gap-2 mt-2 animate-in fade-in slide-in-from-top-2">
-                        <OddsButton selection={match.markets.extra.over} />
-                        <OddsButton selection={match.markets.extra.under} />
-                        <OddsButton selection={match.markets.extra.btts} />
+                      <div className="space-y-3 mt-2 animate-in fade-in slide-in-from-top-2">
+                        {match.markets.extra && (
+                          <div className="grid grid-cols-3 gap-2">
+                            <OddsButton selection={match.markets.extra.over} />
+                            <OddsButton selection={match.markets.extra.under} />
+                            <OddsButton selection={match.markets.extra.btts} />
+                          </div>
+                        )}
+                        {match.markets.special && (
+                          <div className="grid grid-cols-3 gap-2">
+                            <OddsButton selection={match.markets.special.dc1x} />
+                            <OddsButton selection={match.markets.special.dcx2} />
+                            <OddsButton selection={match.markets.special.cs} />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -340,10 +405,24 @@ export default function Home() {
               <h3 className="font-semibold text-white flex items-center gap-2">Betslip {selections.length > 0 && <span className="bg-green-500 text-gray-950 text-xs px-2 py-0.5 rounded-full font-bold">{selections.length}</span>}</h3>
               {selections.length > 0 && (<button onClick={handleShareBetslip} className="text-gray-400 hover:text-green-500 transition-colors"><Share2 className="w-4 h-4" /></button>)}
             </div>
+
+            {/* NEW: Booking Code Loader */}
+            <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
+              <div className="flex items-center gap-2 mb-2">
+                <Ticket className="w-4 h-4 text-green-500" />
+                <span className="text-xs font-bold text-white">Load Booking Code</span>
+              </div>
+              <div className="flex gap-2">
+                <input type="text" value={bookingCode} onChange={(e) => setBookingCode(e.target.value.toUpperCase())} placeholder="e.g. WC2026" className="flex-1 h-8 rounded bg-gray-900 border border-gray-800 text-xs text-white px-2 focus:outline-none focus:ring-1 focus:ring-green-500 uppercase" />
+                <button onClick={() => loadBookingCode(bookingCode)} className="h-8 px-3 bg-green-600 text-white rounded text-xs font-bold hover:bg-green-700">Load</button>
+              </div>
+            </div>
+
             <div className="mb-4 p-3 bg-gray-950 rounded-lg border border-gray-800">
               <div className="flex items-center justify-between mb-2"><span className="text-xs font-bold text-white flex items-center gap-1"><Zap className="w-3 h-3 text-yellow-500" /> Quick Bet</span><button onClick={toggleQuickBet} className={`w-10 h-5 rounded-full relative transition-colors ${quickBetEnabled ? 'bg-green-500' : 'bg-gray-700'}`}><div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${quickBetEnabled ? 'left-5' : 'left-0.5'}`} /></button></div>
               {quickBetEnabled && (<div className="flex items-center gap-2"><span className="text-xs text-gray-400">Stake:</span><input type="number" value={quickBetStake} onChange={(e) => setQuickBetStake(parseFloat(e.target.value) || 0)} className="w-20 h-7 rounded bg-gray-900 border border-gray-800 text-xs text-white text-center focus:outline-none focus:ring-1 focus:ring-green-500" /><span className="text-xs text-gray-500">{currency}</span></div>)}
             </div>
+
             <div className="space-y-3 mb-4 min-h-[100px]">
               {selections.length === 0 ? (<p className="text-center text-gray-500 text-sm py-8">Click an odd to add to your betslip</p>) : (
                 selections.map((sel) => (
@@ -354,13 +433,34 @@ export default function Home() {
                 ))
               )}
             </div>
+
             {selections.length > 0 && (
               <div className="space-y-3 border-t border-gray-800 pt-4">
-                <div className="flex gap-2">{[10, 50, 100].map((amt) => (<button key={amt} onClick={() => setStake(amt)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">{formatMoney(amt)}</button>))}<button onClick={() => setStake(walletBalance)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">MAX</button></div>
-                <div><label className="text-xs text-gray-400 mb-1 block">Stake ({currency})</label><input type="number" placeholder="0.00" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-right font-bold" value={stake === 0 ? '' : stake} onChange={(e) => setStake(parseFloat(e.target.value) || 0)} /></div>
+                {/* NEW: Free Bet Toggle */}
+                {freeBetBalance > 0 && (
+                  <div className="flex items-center justify-between p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Gift className="w-4 h-4 text-green-500" />
+                      <span className="text-xs font-bold text-green-400">Use Free Bet (GHS {freeBetBalance.toFixed(2)})</span>
+                    </div>
+                    <button onClick={toggleFreeBet} className={`w-10 h-5 rounded-full relative transition-colors ${useFreeBet ? 'bg-green-500' : 'bg-gray-700'}`}>
+                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${useFreeBet ? 'left-5' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                )}
+
+                {!useFreeBet && (
+                  <>
+                    <div className="flex gap-2">{[10, 50, 100].map((amt) => (<button key={amt} onClick={() => setStake(amt)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">{formatMoney(amt)}</button>))}<button onClick={() => setStake(walletBalance)} className="flex-1 py-1 text-xs font-bold bg-gray-800 text-gray-300 rounded hover:bg-green-600 hover:text-white transition-colors">MAX</button></div>
+                    <div><label className="text-xs text-gray-400 mb-1 block">Stake ({currency})</label><input type="number" placeholder="0.00" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-right font-bold" value={stake === 0 ? '' : stake} onChange={(e) => setStake(parseFloat(e.target.value) || 0)} /></div>
+                  </>
+                )}
+                
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Total Odds:</span><span className="text-white font-bold">{totalOdds.toFixed(2)}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Potential Win:</span><span className="text-green-500 font-bold">{formatMoney(potentialWin)}</span></div>
-                <button disabled={isCoolOffActive} className={`w-full h-12 px-8 rounded-md font-bold text-base transition-colors ${isCoolOffActive ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-green-500 text-gray-950 hover:bg-green-600'}`} onClick={handlePlaceBet}>{isCoolOffActive ? '🔒 Cool-Off Active' : 'Place Bet'}</button>
+                <button disabled={isCoolOffActive} className={`w-full h-12 px-8 rounded-md font-bold text-base transition-colors flex items-center justify-center gap-2 ${isCoolOffActive ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-green-500 text-gray-950 hover:bg-green-600'}`} onClick={initiatePlaceBet}>
+                  <Lock className="w-4 h-4" /> {isCoolOffActive ? 'Cool-Off Active' : 'Place Bet'}
+                </button>
               </div>
             )}
           </div>
@@ -371,17 +471,96 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center text-sm text-gray-500"><p className="mb-2">18+ Play Responsibly. Licensed by the Gaming Commission.</p><p>© 2026 BetNova. All rights reserved.</p></div>
       </footer>
 
+      {/* --- NEW: TRANSACTION PIN MODAL --- */}
+      {isPinModalOpen && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
+            <Lock className="w-12 h-12 text-green-500 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">Enter Transaction PIN</h2>
+            <p className="text-sm text-gray-400 mb-6">For your security, please enter your 4-digit PIN to confirm this bet.</p>
+            <input type="password" maxLength={4} value={pinInput} onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))} placeholder="****" className="flex h-14 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-2xl text-white text-center tracking-[1em] focus:outline-none focus:ring-2 focus:ring-green-500 mb-4" autoFocus />
+            <div className="flex gap-3">
+              <button onClick={() => setIsPinModalOpen(false)} className="flex-1 h-11 bg-gray-800 text-gray-300 rounded-md font-bold hover:bg-gray-700 transition-colors">Cancel</button>
+              <button onClick={confirmPlaceBet} className="flex-1 h-11 bg-green-500 text-gray-950 rounded-md font-bold hover:bg-green-600 transition-colors">Confirm</button>
+            </div>
+            <p className="text-xs text-gray-500 mt-4">Default PIN is <span className="text-gray-300">1234</span></p>
+          </div>
+        </div>
+      )}
+
+      {/* --- NEW: ENHANCED AUTH MODAL (Login / Register / Forgot / OTP) --- */}
+      {isAuthOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => { setIsAuthOpen(false); setShowOtpStep(false); setAuthTab('login'); }} />
+          <div className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <button onClick={() => { setIsAuthOpen(false); setShowOtpStep(false); setAuthTab('login'); }} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X className="w-6 h-6" /></button>
+            
+            {showOtpStep ? (
+              <div className="text-center">
+                <Smartphone className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <h2 className="text-xl font-bold text-white mb-2">Verify OTP</h2>
+                <p className="text-sm text-gray-400 mb-6">Enter the 6-digit code sent to {authPhone || 'your phone'}.</p>
+                <input type="text" maxLength={6} value={authOtp} onChange={(e) => setAuthOtp(e.target.value.replace(/\D/g, ''))} placeholder="000000" className="flex h-14 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-2xl text-white text-center tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-green-500 mb-6" autoFocus />
+                <button onClick={handleAuthSubmit} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors">Verify & Continue</button>
+                <button onClick={() => setShowOtpStep(false)} className="w-full mt-3 text-sm text-gray-400 hover:text-white">Change Phone Number</button>
+              </div>
+            ) : authTab === 'forgot' ? (
+              <div>
+                <h2 className="text-xl font-bold text-white mb-2 text-center">Forgot Password</h2>
+                <p className="text-sm text-gray-400 mb-6 text-center">Enter your registered phone number to reset your password.</p>
+                <form onSubmit={handleAuthSubmit} className="space-y-4">
+                  <div><label className="block text-xs font-medium text-gray-400 mb-1">Phone Number</label><input type="tel" value={authPhone} onChange={(e) => setAuthPhone(e.target.value)} placeholder="024XXXXXXX" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                  <button type="submit" className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mt-2">Send Reset Code</button>
+                </form>
+                <button onClick={() => setAuthTab('login')} className="w-full mt-4 text-sm text-gray-400 hover:text-white flex items-center justify-center gap-1"><ArrowLeft className="w-4 h-4" /> Back to Login</button>
+              </div>
+            ) : (
+              <div>
+                <div className="flex border-b border-gray-800 mb-6">
+                  <button onClick={() => setAuthTab('login')} className={`flex-1 pb-3 text-sm font-bold transition-colors ${authTab === 'login' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white'}`}>Log In</button>
+                  <button onClick={() => setAuthTab('register')} className={`flex-1 pb-3 text-sm font-bold transition-colors ${authTab === 'register' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white'}`}>Register</button>
+                </div>
+
+                <form onSubmit={handleAuthSubmit} className="space-y-4">
+                  {authTab === 'register' && (
+                    <>
+                      <div><label className="block text-xs font-medium text-gray-400 mb-1">Full Name</label><input type="text" placeholder="Kwame Mensah" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                      <div><label className="block text-xs font-medium text-gray-400 mb-1">Ghana Card Number (NIA)</label><input type="text" value={authGhanaCard} onChange={(e) => setAuthGhanaCard(e.target.value.toUpperCase())} placeholder="GHA-123456789-0" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white uppercase focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                    </>
+                  )}
+                  <div><label className="block text-xs font-medium text-gray-400 mb-1">Phone Number</label><input type="tel" value={authPhone} onChange={(e) => setAuthPhone(e.target.value)} placeholder="024XXXXXXX" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                  <div><label className="block text-xs font-medium text-gray-400 mb-1">Password</label><input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} placeholder="••••••••" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                  
+                  {authTab === 'login' && (
+                    <div className="text-right"><button type="button" onClick={() => setAuthTab('forgot')} className="text-xs text-green-500 hover:text-green-400">Forgot Password?</button></div>
+                  )}
+
+                  <button type="submit" className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mt-2">
+                    {authTab === 'register' ? 'Create Account' : 'Log In'}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Deposit Modal (with 50% Bonus Banner) */}
+      {isDepositOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsDepositOpen(false)} /><div className="relative bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl"><button onClick={() => setIsDepositOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X className="w-6 h-6" /></button><h2 className="text-2xl font-bold text-white mb-2">Deposit Funds</h2>
+        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4 flex items-center gap-3">
+          <Gift className="w-6 h-6 text-green-500 flex-shrink-0" />
+          <div><p className="text-sm font-bold text-green-400">🎁 50% First Deposit Bonus!</p><p className="text-xs text-gray-400">Deposit GHS 100, get GHS 150 in your wallet.</p></div>
+        </div>
+        <div className="mb-4"><label className="block text-xs font-medium text-gray-400 mb-1 flex items-center gap-1"><Tag className="w-3 h-3" /> Promo Code</label><div className="flex gap-2"><input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="e.g. WELCOME50" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white uppercase focus:outline-none focus:ring-2 focus:ring-green-500" /><button onClick={() => applyPromoCode(promoInput)} className="h-10 px-4 bg-green-600 text-white rounded-md font-bold text-xs hover:bg-green-700">Apply</button></div></div><div className="grid grid-cols-3 gap-2 mb-4">{[10, 50, 100, 200, 500, 1000].map((amt) => (<button key={amt} onClick={() => setDepositAmount(amt)} className={`py-2 rounded-md font-bold border transition-colors ${depositAmount === amt ? 'bg-green-500 border-green-500 text-gray-950' : 'bg-gray-950 border-gray-800 text-white hover:border-green-500'}`}>{formatMoney(amt)}</button>))}</div><div className="mb-6"><label className="block text-xs font-medium text-gray-400 mb-1">Custom Amount</label><input type="number" value={depositAmount || ''} onChange={(e) => setDepositAmount(parseFloat(e.target.value) || 0)} className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" /></div><button onClick={handleDeposit} disabled={depositAmount <= 0} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Confirm Deposit</button></div></div>
+      )}
+
       {isCoolOffModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsCoolOffModalOpen(false)} /><div className="relative bg-gray-900 border-2 border-red-500/50 rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center"><ShieldAlert className="w-12 h-12 text-red-500 mx-auto mb-4" /><h2 className="text-xl font-bold text-white mb-2">Self-Exclusion / Cool-Off</h2><p className="text-sm text-gray-400 mb-6">Temporarily lock your account to play responsibly.</p><div className="grid grid-cols-3 gap-2 mb-4">{[{h:24, l:'24h'}, {h:168, l:'7 Days'}, {h:720, l:'30 Days'}].map((c) => (<button key={c.h} onClick={() => { activateCoolOff(c.h); setIsCoolOffModalOpen(false); }} className="py-2 rounded-md font-bold bg-gray-800 text-white hover:bg-red-500 transition-colors">{c.l}</button>))}</div><button onClick={deactivateCoolOff} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mb-2">Unlock Early</button><button onClick={() => setIsCoolOffModalOpen(false)} className="w-full h-11 bg-gray-800 text-gray-300 rounded-md font-bold text-base hover:bg-gray-700 transition-colors">Cancel</button></div></div>
       )}
 
-      {isDepositOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsDepositOpen(false)} /><div className="relative bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl"><button onClick={() => setIsDepositOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X className="w-6 h-6" /></button><h2 className="text-2xl font-bold text-white mb-2">Deposit Funds</h2><div className="mb-4"><label className="block text-xs font-medium text-gray-400 mb-1 flex items-center gap-1"><Tag className="w-3 h-3" /> Promo Code</label><div className="flex gap-2"><input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="e.g. WELCOME25" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white uppercase focus:outline-none focus:ring-2 focus:ring-green-500" /><button onClick={() => applyPromoCode(promoInput)} className="h-10 px-4 bg-green-600 text-white rounded-md font-bold text-xs hover:bg-green-700">Apply</button></div></div><div className="grid grid-cols-3 gap-2 mb-4">{[10, 50, 100, 200, 500, 1000].map((amt) => (<button key={amt} onClick={() => setDepositAmount(amt)} className={`py-2 rounded-md font-bold border transition-colors ${depositAmount === amt ? 'bg-green-500 border-green-500 text-gray-950' : 'bg-gray-950 border-gray-800 text-white hover:border-green-500'}`}>{formatMoney(amt)}</button>))}</div><div className="mb-6"><label className="block text-xs font-medium text-gray-400 mb-1">Custom Amount</label><input type="number" value={depositAmount || ''} onChange={(e) => setDepositAmount(parseFloat(e.target.value) || 0)} className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" /></div><button onClick={handleDeposit} disabled={depositAmount <= 0} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Confirm Deposit</button></div></div>
-      )}
-
-      {isLoginOpen && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsLoginOpen(false)} /><div className="relative bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl"><button onClick={() => setIsLoginOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><X className="w-6 h-6" /></button><div className="text-center mb-6"><h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2><p className="text-sm text-gray-400">Log in to your BetNova account.</p></div><form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); setIsLoginOpen(false); }}><div><label className="block text-xs font-medium text-gray-400 mb-1">Email or Phone</label><input type="text" placeholder="user@example.com" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" /></div><div><label className="block text-xs font-medium text-gray-400 mb-1">Password</label><input type="password" placeholder="••••••••" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" /></div><button type="submit" className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mt-2">Log In</button></form></div></div>)}
-      
-      {/* --- BOTTOM NAVIGATION BAR (VISIBLE ON ALL SCREENS) --- */}
+      {/* --- BOTTOM NAVIGATION BAR --- */}
       <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-50 pb-4">
         <div className="container mx-auto max-w-lg flex items-center justify-around py-3">
           <Link href="/" className="flex flex-col items-center gap-1 text-green-500 hover:text-green-400 transition-colors">

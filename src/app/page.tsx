@@ -395,14 +395,7 @@ export default function Home() {
         </aside>
       </main>
 
-      <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-50 pb-4">
-        <div className="container mx-auto max-w-lg flex items-center justify-around py-3">
-          <Link href="/" className="flex flex-col items-center gap-1 text-green-500"><TrendingUp className="w-6 h-6" /><span className="text-[10px] font-bold">Sports</span></Link>
-          <Link href="/games" className="flex flex-col items-center gap-1 text-gray-500"><Gamepad2 className="w-6 h-6" /><span className="text-[10px] font-bold">Games</span></Link>
-          <Link href="/withdraw" className="flex flex-col items-center gap-1 text-gray-500"><Wallet className="w-6 h-6" /><span className="text-[10px] font-bold">Withdraw</span></Link>
-          <Link href="/profile" className="flex flex-col items-center gap-1 text-gray-500"><User className="w-6 h-6" /><span className="text-[10px] font-bold">Profile</span></Link>
-        </div>
-      </nav>
+     
 
       {/* PIN MODAL */}
       {isPinModalOpen && (

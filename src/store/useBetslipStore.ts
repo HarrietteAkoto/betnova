@@ -18,10 +18,10 @@ interface BetslipState {
   promoCodeApplied: boolean; appliedPromoValue: number;
   isCoolOffActive: boolean; coolOffUntil: number | null;
   currency: Currency; favorites: string[];
-  // NEW: Security & Promos
   transactionPin: string; 
   freeBetBalance: number;
   useFreeBet: boolean;
+  customBookingCodes: Record<string, Selection[]>; // NEW: Stores generated codes
 
   addSelection: (sel: Selection) => void; removeSelection: (id: string) => void; setStake: (s: number) => void;
   toggleMode: () => void; clearBetslip: () => void; placeBet: (o: number, w: number) => void;
@@ -32,9 +32,9 @@ interface BetslipState {
   setCurrency: (c: Currency) => void; toggleFavorite: (matchId: string) => void;
   setTransactionPin: (pin: string) => void; toggleFreeBet: () => void; addFreeBet: (amount: number) => void;
   loadBookingCode: (code: string) => void;
+  generateBookingCode: () => string; // NEW: Generates a code
 }
 
-// Mock Booking Codes Database
 const bookingCodes: Record<string, Selection[]> = {
   'WC2026': [
     { id: 'wc-1', matchId: 'wc', matchName: 'Ghana vs Brazil', market: 'Match Winner', outcome: 'Brazil (2)', odds: 1.65 },
@@ -52,9 +52,10 @@ export const useBetslipStore = create<BetslipState>()(
       quickBetEnabled: false, quickBetStake: 10, totalWagered: 0, achievements: [],
       promoCodeApplied: false, appliedPromoValue: 0, isCoolOffActive: false, coolOffUntil: null,
       currency: 'GHS', favorites: [],
-      transactionPin: '1234', // Default mock PIN
-      freeBetBalance: 20, // Start with GHS 20 free bet
+      transactionPin: '1234', 
+      freeBetBalance: 20, 
       useFreeBet: false,
+      customBookingCodes: {}, // NEW
 
       addSelection: (sel) => set((st) => st.selections.find(s => s.id === sel.id) ? st : { selections: [...st.selections, sel] }),
       removeSelection: (id) => set((st) => ({ selections: st.selections.filter(s => s.id !== id) })),
@@ -82,7 +83,7 @@ export const useBetslipStore = create<BetslipState>()(
         set((st) => ({
           betHistory: [...newBets, ...st.betHistory], selections: [], stake: 0, useFreeBet: false,
           totalWagered: totalWagered + bonusStake, 
-          freeBetBalance: useFreeBet ? 0 : freeBetBalance, // Consume free bet
+          freeBetBalance: useFreeBet ? 0 : freeBetBalance, 
           achievements: newAchievements, appliedPromoValue: 0, promoCodeApplied: false,
           notification: msg || `✅ Placed ${useFreeBet ? 'Free ' : ''}bet for GHS ${bonusStake.toFixed(2)}!`
         }));
@@ -128,10 +129,40 @@ export const useBetslipStore = create<BetslipState>()(
       toggleFreeBet: () => set((st) => ({ useFreeBet: !st.useFreeBet, stake: st.useFreeBet ? st.stake : 0 })),
       addFreeBet: (amount) => set((st) => ({ freeBetBalance: st.freeBetBalance + amount })),
       
+      // NEW: GENERATE BOOKING CODE
+      generateBookingCode: () => {
+        const { selections, customBookingCodes } = get();
+        if (selections.length === 0) return "";
+        
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = 'BN-';
+        for (let i = 0; i < 5; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        set({ 
+          customBookingCodes: { ...customBookingCodes, [code]: selections },
+          notification: `✅ Code ${code} generated!`
+        });
+        setTimeout(() => set({ notification: null }), 3000);
+        return code;
+      },
+
+      // UPDATED: LOAD BOOKING CODE (Checks custom codes first)
       loadBookingCode: (code) => {
-        const picks = bookingCodes[code.toUpperCase()];
+        const { customBookingCodes } = get();
+        const upperCode = code.toUpperCase().trim();
+        if (!upperCode) return;
+        
+        if (customBookingCodes[upperCode]) {
+          set({ selections: customBookingCodes[upperCode], notification: `✅ Shared slip ${upperCode} loaded!` });
+          setTimeout(() => set({ notification: null }), 3000);
+          return;
+        }
+        
+        const picks = bookingCodes[upperCode];
         if (!picks) { set({ notification: '🚫 Invalid Booking Code.' }); setTimeout(() => set({ notification: null }), 3000); return; }
-        set((st) => ({ selections: [...picks], notification: `✅ Booking Code ${code.toUpperCase()} loaded!` }));
+        set({ selections: picks, notification: `✅ Promo slip ${upperCode} loaded!` });
         setTimeout(() => set({ notification: null }), 3000);
       }
     }),

@@ -7,7 +7,7 @@ import { useBetslipStore } from "../store/useBetslipStore";
 import { 
   TrendingUp, Menu, User, X, MessageCircle, Share2, BarChart3, Gift, ChevronDown, ChevronUp, 
   Zap, Search, Trophy, Bell, Play, ShieldAlert, Crown, Users, Copy, Tag, Star, Globe, 
-  Gamepad2, Wallet, Ticket, Lock, Smartphone, Flame, Award, ClipboardList 
+  Gamepad2, Wallet, Ticket, Lock, Smartphone, Flame, Award, ClipboardList, ArrowLeft 
 } from "lucide-react";
 
 interface MatchOdds { id: string; matchId: string; matchName: string; market: string; outcome: string; odds: number; }
@@ -76,8 +76,6 @@ export default function Home() {
   const [authGhanaCard, setAuthGhanaCard] = useState("");
   const [authOtp, setAuthOtp] = useState("");
   const [showOtpStep, setShowOtpStep] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
 
   const [walletBalance, setWalletBalance] = useState<number>(() => { if (typeof window !== 'undefined') { const saved = localStorage.getItem('betnova_wallet'); return saved ? parseFloat(saved) : 1500; } return 1500; });
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => { if (typeof window !== 'undefined') { return localStorage.getItem('betnova_logged_in') === 'true'; } return false; });
@@ -99,8 +97,6 @@ export default function Home() {
   useEffect(() => { if (typeof window !== 'undefined') localStorage.setItem('betnova_wallet', walletBalance.toString()); }, [walletBalance]);
   useEffect(() => { if (typeof window !== 'undefined') localStorage.setItem('betnova_logged_in', isLoggedIn.toString()); }, [isLoggedIn]);
   useEffect(() => { const interval = setInterval(() => setCommentaryIndex(prev => (prev + 1) % liveCommentary.length), 8000); return () => clearInterval(interval); }, []);
-  useEffect(() => { const interval = setInterval(() => setCurrentSlide((prev) => (prev + 1) % 3), 4000); return () => clearInterval(interval); }, []);
-  useEffect(() => { setGeneratedCode(null); }, [selections]);
 
   const sortedAndFilteredMatches = matches.filter(match => {
     const matchesSearch = match.home.toLowerCase().includes(searchQuery.toLowerCase()) || match.away.toLowerCase().includes(searchQuery.toLowerCase());
@@ -181,6 +177,11 @@ export default function Home() {
     }
   };
 
+  const handleCopyExpertPick = (pick: typeof expertPicks[0]) => {
+    addSelection({ id: pick.id, matchId: 'ep', matchName: pick.matchName, market: pick.market, outcome: pick.outcome, odds: pick.odds });
+    setNotification("📋 Copied Expert Pick!"); setTimeout(() => setNotification(null), 3000);
+  };
+
   const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (authTab === 'register' && !showOtpStep) { setShowOtpStep(true); setNotification("📱 OTP sent!"); setTimeout(() => setNotification(null), 3000); return; }
@@ -226,14 +227,11 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <section className="lg:col-span-8 space-y-6">
-          {/* Carousel */}
-          <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl border border-gray-800">
-             <div className="absolute inset-0 bg-gradient-to-br from-green-900/40 to-gray-900 flex items-center justify-center">
-                <div className="text-center p-6">
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">FIFA World Cup 2026</h3>
-                  <p className="text-green-400 font-medium">Special Odds on all Group Stage Matches!</p>
-                </div>
-             </div>
+          <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl border border-gray-800 bg-gradient-to-br from-green-900/40 to-gray-900 flex items-center justify-center">
+            <div className="text-center p-6">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">FIFA World Cup 2026</h3>
+              <p className="text-green-400 font-medium">Special Odds on all Group Stage Matches!</p>
+            </div>
           </div>
 
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -278,7 +276,6 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* NEW: Tabbed Market Interface */}
                 <div className="pt-2 border-t border-gray-800">
                   <div className="flex gap-4 mb-3 border-b border-gray-800">
                     {(['markets', 'stats', 'codes'] as const).map((tab) => (
@@ -326,8 +323,8 @@ export default function Home() {
 
                   {openMarketsId === match.id && activeMarketTab === 'stats' && (
                     <div className="bg-gray-950 rounded-lg p-3 border border-gray-800 animate-in fade-in slide-in-from-top-2">
-                      <p className="text-sm text-gray-300">📊 {match.stats}</p>
-                      <div className="mt-3 space-y-2">
+                      <p className="text-sm text-gray-300 mb-3">📊 {match.stats}</p>
+                      <div className="space-y-2">
                         <div className="flex justify-between text-xs text-gray-400"><span>Possession</span><span>55% - 45%</span></div>
                         <div className="w-full bg-gray-800 rounded-full h-1.5"><div className="bg-green-500 h-1.5 rounded-full" style={{ width: '55%' }}></div></div>
                       </div>
@@ -348,7 +345,6 @@ export default function Home() {
           )}
         </section>
 
-        {/* Betslip Sidebar (Unchanged from our perfect version) */}
         <aside id="mobile-betslip" className="lg:col-span-4">
           <div className="bg-gray-900 rounded-lg border border-gray-800 p-4 lg:sticky lg:top-24">
             <div className="flex items-center justify-between mb-4">
@@ -400,7 +396,11 @@ export default function Home() {
         </aside>
       </main>
 
-      {/* Bottom Nav & Modals (PIN, Auth, Deposit, Cool-off) remain exactly as they were */}
+      <footer className="border-t border-gray-800 bg-gray-900 mt-12 py-8">
+        <div className="container mx-auto px-4 text-center text-sm text-gray-500"><p className="mb-2">18+ Play Responsibly. Licensed by the Gaming Commission.</p><p>© 2026 BetNova. All rights reserved.</p></div>
+      </footer>
+
+      {/* --- BOTTOM NAVIGATION BAR --- */}
       <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-50 pb-4 lg:hidden">
         <div className="container mx-auto max-w-lg flex items-center justify-around py-3">
           <Link href="/" className="flex flex-col items-center gap-1 text-green-500 hover:text-green-400 transition-colors"><TrendingUp className="w-6 h-6" /><span className="text-[10px] font-bold">Sports</span></Link>
@@ -410,9 +410,10 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* --- TRANSACTION PIN MODAL --- */}
       {isPinModalOpen && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsPinModalOpen(false)} />
           <div className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
             <Lock className="w-12 h-12 text-green-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-white mb-2">Enter Transaction PIN</h2>
@@ -424,8 +425,111 @@ export default function Home() {
           </div>
         </div>
       )}
-      
-      {/* (Other modals like Auth, Deposit, Cool-off are kept exactly as they were to save space, they are already in your file!) */}
+
+      {/* --- AUTH MODAL (Login / Register / Forgot / OTP) --- */}
+      {isAuthOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => { setIsAuthOpen(false); setShowOtpStep(false); setAuthTab('login'); }} />
+          <div className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <button onClick={() => { setIsAuthOpen(false); setShowOtpStep(false); setAuthTab('login'); }} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X className="w-6 h-6" /></button>
+            {showOtpStep ? (
+              <div className="text-center">
+                <Smartphone className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <h2 className="text-xl font-bold text-white mb-2">Verify OTP</h2>
+                <p className="text-sm text-gray-400 mb-6">Enter the 6-digit code sent to {authPhone || 'your phone'}.</p>
+                <input type="text" maxLength={6} value={authOtp} onChange={(e) => setAuthOtp(e.target.value.replace(/\D/g, ''))} placeholder="000000" className="flex h-14 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-2xl text-white text-center tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-green-500 mb-6" autoFocus />
+                <button onClick={handleAuthSubmit} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors">Verify & Continue</button>
+                <button onClick={() => setShowOtpStep(false)} className="w-full mt-3 text-sm text-gray-400 hover:text-white">Change Phone Number</button>
+              </div>
+            ) : authTab === 'forgot' ? (
+              <div>
+                <h2 className="text-xl font-bold text-white mb-2 text-center">Forgot Password</h2>
+                <p className="text-sm text-gray-400 mb-6 text-center">Enter your registered phone number to reset your password.</p>
+                <form onSubmit={handleAuthSubmit} className="space-y-4">
+                  <div><label className="block text-xs font-medium text-gray-400 mb-1">Phone Number</label><input type="tel" value={authPhone} onChange={(e) => setAuthPhone(e.target.value)} placeholder="024XXXXXXX" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                  <button type="submit" className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mt-2">Send Reset Code</button>
+                </form>
+                <button onClick={() => setAuthTab('login')} className="w-full mt-4 text-sm text-gray-400 hover:text-white flex items-center justify-center gap-1"><ArrowLeft className="w-4 h-4" /> Back to Login</button>
+              </div>
+            ) : (
+              <div>
+                <div className="flex border-b border-gray-800 mb-6">
+                  <button onClick={() => setAuthTab('login')} className={`flex-1 pb-3 text-sm font-bold transition-colors ${authTab === 'login' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white'}`}>Log In</button>
+                  <button onClick={() => setAuthTab('register')} className={`flex-1 pb-3 text-sm font-bold transition-colors ${authTab === 'register' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white'}`}>Register</button>
+                </div>
+                <form onSubmit={handleAuthSubmit} className="space-y-4">
+                  {authTab === 'register' && (
+                    <>
+                      <div><label className="block text-xs font-medium text-gray-400 mb-1">Full Name</label><input type="text" placeholder="Kwame Mensah" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                      <div><label className="block text-xs font-medium text-gray-400 mb-1">Ghana Card Number (NIA)</label><input type="text" value={authGhanaCard} onChange={(e) => setAuthGhanaCard(e.target.value.toUpperCase())} placeholder="GHA-123456789-0" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white uppercase focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                    </>
+                  )}
+                  <div><label className="block text-xs font-medium text-gray-400 mb-1">Phone Number</label><input type="tel" value={authPhone} onChange={(e) => setAuthPhone(e.target.value)} placeholder="024XXXXXXX" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                  <div><label className="block text-xs font-medium text-gray-400 mb-1">Password</label><input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} placeholder="••••••••" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" required /></div>
+                  {authTab === 'login' && (<div className="text-right"><button type="button" onClick={() => setAuthTab('forgot')} className="text-xs text-green-500 hover:text-green-400">Forgot Password?</button></div>)}
+                  <button type="submit" className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mt-2">{authTab === 'register' ? 'Create Account' : 'Log In'}</button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* --- DEPOSIT MODAL --- */}
+      {isDepositOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsDepositOpen(false)} />
+          <div className="relative bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <button onClick={() => setIsDepositOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X className="w-6 h-6" /></button>
+            <h2 className="text-2xl font-bold text-white mb-2">Deposit Funds</h2>
+            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4 flex items-center gap-3">
+              <Gift className="w-6 h-6 text-green-500 flex-shrink-0" />
+              <div><p className="text-sm font-bold text-green-400">🎁 50% First Deposit Bonus!</p><p className="text-xs text-gray-400">Deposit GHS 100, get GHS 150 in your wallet.</p></div>
+            </div>
+            <div className="mb-4"><label className="block text-xs font-medium text-gray-400 mb-1 flex items-center gap-1"><Tag className="w-3 h-3" /> Promo Code</label><div className="flex gap-2"><input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="e.g. WELCOME50" className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white uppercase focus:outline-none focus:ring-2 focus:ring-green-500" /><button onClick={() => applyPromoCode(promoInput)} className="h-10 px-4 bg-green-600 text-white rounded-md font-bold text-xs hover:bg-green-700">Apply</button></div></div>
+            <div className="grid grid-cols-3 gap-2 mb-4">{[10, 50, 100, 200, 500, 1000].map((amt) => (<button key={amt} onClick={() => setDepositAmount(amt)} className={`py-2 rounded-md font-bold border transition-colors ${depositAmount === amt ? 'bg-green-500 border-green-500 text-gray-950' : 'bg-gray-950 border-gray-800 text-white hover:border-green-500'}`}>{formatMoney(amt)}</button>))}</div>
+            <div className="mb-6"><label className="block text-xs font-medium text-gray-400 mb-1">Custom Amount</label><input type="number" value={depositAmount || ''} onChange={(e) => setDepositAmount(parseFloat(e.target.value) || 0)} className="flex h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
+            <button onClick={handleDeposit} disabled={depositAmount <= 0} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Confirm Deposit</button>
+          </div>
+        </div>
+      )}
+
+      {/* --- COOL-OFF MODAL --- */}
+      {isCoolOffModalOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsCoolOffModalOpen(false)} />
+          <div className="relative bg-gray-900 border-2 border-red-500/50 rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
+            <ShieldAlert className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">Self-Exclusion / Cool-Off</h2>
+            <p className="text-sm text-gray-400 mb-6">Temporarily lock your account to play responsibly.</p>
+            <div className="grid grid-cols-3 gap-2 mb-4">{[{h:24, l:'24h'}, {h:168, l:'7 Days'}, {h:720, l:'30 Days'}].map((c) => (<button key={c.h} onClick={() => { activateCoolOff(c.h); setIsCoolOffModalOpen(false); }} className="py-2 rounded-md font-bold bg-gray-800 text-white hover:bg-red-500 transition-colors">{c.l}</button>))}</div>
+            <button onClick={deactivateCoolOff} className="w-full h-11 bg-green-500 text-gray-950 rounded-md font-bold text-base hover:bg-green-600 transition-colors mb-2">Unlock Early</button>
+            <button onClick={() => setIsCoolOffModalOpen(false)} className="w-full h-11 bg-gray-800 text-gray-300 rounded-md font-bold text-base hover:bg-gray-700 transition-colors">Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* --- CHAT WIDGET --- */}
+      <div className="fixed bottom-24 right-6 z-50 lg:bottom-6">
+        {isChatOpen && (
+          <div className="mb-4 w-80 h-96 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl flex flex-col overflow-hidden">
+            <div className="bg-green-600 p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2"><div className="w-2 h-2 bg-white rounded-full animate-pulse"></div><h3 className="font-bold text-white text-sm">BetNova Support</h3></div>
+              <button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-950">
+              <div className="bg-gray-800 text-white text-sm p-3 rounded-lg rounded-tl-none max-w-[80%]">👋 Hi Harriette! Welcome to BetNova. How can we help you today?</div>
+            </div>
+            <div className="p-3 border-t border-gray-800 bg-gray-900">
+              <div className="flex gap-2">
+                <input type="text" placeholder="Type a message..." className="flex-1 h-9 rounded-md bg-gray-950 border border-gray-800 px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-green-500" />
+                <button className="h-9 px-3 bg-green-500 text-gray-950 rounded-md font-bold text-xs hover:bg-green-600">Send</button>
+              </div>
+            </div>
+          </div>
+        )}
+        <button onClick={() => setIsChatOpen(!isChatOpen)} className="w-14 h-14 bg-green-500 text-gray-950 rounded-full shadow-lg flex items-center justify-center hover:bg-green-600 transition-all hover:scale-110">{isChatOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}</button>
+      </div>
     </div>
   );
 }

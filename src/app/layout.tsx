@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/Header";     // ← New import
+import Header from "@/components/layout/Header";        // Try this first
 import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-[#0A0A0A] text-white">
         <Header />
-        <main className="pb-20 md:pb-0 min-h-screen">   {/* padding for mobile bottom nav */}
+        <main className="pb-20 md:pb-0 min-h-screen">
           {children}
         </main>
         <BottomNav />

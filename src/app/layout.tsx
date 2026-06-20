@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Header from "@/components/layout/Header";     // ← New import
+import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "BetNova - The Ultimate Betting Experience",
-  description: "A high-fidelity sports betting web application",
+  title: "BetNova - Sports Betting Ghana",
+  description: "The Ultimate Sports Betting Experience",
 };
 
 export default function RootLayout({
@@ -12,10 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // suppressHydrationWarning tells React to ignore browser extensions
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning className="antialiased">
-        {children}
+      <body className="antialiased bg-[#0A0A0A] text-white">
+        <Header />
+        <main className="pb-20 md:pb-0 min-h-screen">   {/* padding for mobile bottom nav */}
+          {children}
+        </main>
+        <BottomNav />
       </body>
     </html>
   );

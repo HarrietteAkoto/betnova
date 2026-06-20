@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/Header";        // Try this first
+import Header from "@components/layout/Header";     // ← This should now work after tsconfig update
 import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {

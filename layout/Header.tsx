@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Search, Bell, User, Wallet, Menu, X } from "lucide-react";
-import { useBetslipStore } from "@/src/store/useBetslipStore";
+import { useBetslipStore } from "@/store/useBetslipStore";   // ← Fixed import
 
 export default function Header() {
   const { walletBalance, currency = "GHS" } = useBetslipStore();
@@ -22,7 +22,7 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Search */}
+          {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
             <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
             <input
@@ -32,8 +32,9 @@ export default function Header() {
             />
           </div>
 
-          {/* Right side */}
+          {/* Right Side */}
           <div className="flex items-center gap-3">
+            {/* Balance */}
             <div className="hidden md:flex items-center gap-2 bg-gray-900 px-4 py-2 rounded-2xl border border-gray-700">
               <Wallet className="text-emerald-500" size={20} />
               <span className="font-semibold text-sm">

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { X, Ticket, Share2, Lock } from "lucide-react";
 // IMPORTANT: If you get an error on the line below, change the path to wherever your store is located (e.g., '../store/useBetslipStore')
-import { useBetslipStore } from "@/store/useBetslipStore"; 
+import { useBetslipStore } from "@/app/store/useBetslipStore"; 
 
 interface BetslipProps {
   formatMoney: (amount: number) => string;

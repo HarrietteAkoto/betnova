@@ -4,9 +4,9 @@ import { useBetslipStore } from "@/store/useBetslipStore"; // Note: Change to ".
 import { Search, Trophy, User } from "lucide-react";
 
 // Import our new dedicated components
-import { HeroCarousel } from "@components/HeroCarousel";
-import { MatchCard, MatchData } from "@components/MatchCard";
-import { Betslip } from "@components/Betslip";
+import { HeroCarousel } from "../../components/HeroCarousel";
+import { MatchCard, MatchData } from "../../components/MatchCard";
+import { Betslip } from "../../components/Betslip";
 
 // Mock Data (Keep your real data here or move it to a separate data.ts file later)
 const initialMatches: MatchData[] = [

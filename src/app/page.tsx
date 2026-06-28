@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useBetslipStore } from "@/store/useBetslipStore"; // Note: Change to "../store/useBetslipStore" if you get an error here
+import { useBetslipStore } from "../store/useBetslipStore"; // Note: Change to "../store/useBetslipStore" if you get an error here
 import { Search, Trophy, User } from "lucide-react";
 
 // Import our new dedicated components
